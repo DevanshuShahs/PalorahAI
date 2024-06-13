@@ -10,21 +10,28 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Center(
-        child: Scaffold(
-          appBar: AppBar(
+      home: Scaffold(
+        appBar: AppBar(
           backgroundColor: const Color(0xFFD0DACC),
           title: const Text('PalorahAI'),
         ),
         body: Center(
-          child: const Padding(
-            child: const Text('Get Started'),
-            padding: EdgeInsets.all(10),
+            child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shadowColor: Colors.greenAccent,
+              foregroundColor: Colors.black,
+              backgroundColor: const Color(0xFFD0DACC),
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(32.0)),
+              minimumSize: Size(300, 100), //////// HERE
+            ),
+            onPressed: () {},
+            child: Text('Get Started'),
+          )
+
           ),
-        )
         ),
-      )
     );
   }
 }
-
