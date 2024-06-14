@@ -1,4 +1,6 @@
 
+import 'package:app/Pages/Questionnaire/question_1.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class loginPage extends StatefulWidget{
@@ -87,6 +89,10 @@ class _loginPageState extends State<loginPage>{
           child: ElevatedButton(
             onPressed: (){
               // Add authentication here
+              //for now: skip that part and just go to questionnaire
+              Navigator.push(
+              context,
+              CupertinoPageRoute(builder: (context) => QuestionOne()));
             },
             child: const Text(
               "Login",
