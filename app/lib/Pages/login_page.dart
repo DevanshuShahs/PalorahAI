@@ -86,7 +86,7 @@ class _loginPageState extends State<loginPage>{
           width: MediaQuery.sizeOf(context).width * .60,
           child: ElevatedButton(
             onPressed: (){
-              Navigator.pushReplacementNamed(context, "/home");
+              // Add authentication here
             },
             child: const Text(
               "Login",
