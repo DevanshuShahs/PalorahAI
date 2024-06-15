@@ -1,11 +1,10 @@
+import 'package:app/Pages/Questionnaire/question_3.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Pages/Questionnaire/question_2.dart';
 
 class QuestionOne extends StatefulWidget {
   List<String> responses = [];
-  String checkbox1 = "You are batman";
-  String checkbox2 = "You are superman";
 
   List<String> nonprofits = [
     "Education",
@@ -264,6 +263,14 @@ class _QuestionOneState extends State<QuestionOne> {
     );
   }
 
+  void _nextPage() {
+    widget.responses.add(myController.text);
+    Navigator.push(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => QuestionTwo(responses: widget.responses)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -315,7 +322,7 @@ class _QuestionOneState extends State<QuestionOne> {
                           });
                         },
                         decoration: const InputDecoration(
-                          hintText: 'Search non-profits by first letter',
+                          hintText: 'Search categories by first letter',
                           prefixIcon: Icon(Icons.search),
                         ),
                       ),
@@ -343,8 +350,8 @@ class _QuestionOneState extends State<QuestionOne> {
                             borderRadius: BorderRadius.circular(32.0)),
                         minimumSize: const Size(250, 60),
                       ),
-                      child: Text("Next"),
-                      onPressed: () {},
+                      onPressed: myController.text.isEmpty ? null : _nextPage,
+                      child: const Text("Next"),
                     ),
                   ),
                 ],
