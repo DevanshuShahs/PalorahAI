@@ -15,11 +15,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Custom Fonts',
       // Set Raleway as the default app font.
-      theme: ThemeData(fontFamily: 'Poppins'),
+      theme: ThemeData(
+        fontFamily: 'Poppins', useMaterial3: true,
+
+        // Define the default brightness and colors.
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFd0dacc)
+        ),
+      ),
       initialRoute: "/home",
       routes: {
         "/login": (context) => loginPage(),
-        "/home": (context) =>homePage(),
+        "/home": (context) => homePage(),
       },
     );
   }

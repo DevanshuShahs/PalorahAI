@@ -1,4 +1,3 @@
-import 'package:app/Pages/Questionnaire/question_3.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Pages/Questionnaire/question_2.dart';
@@ -6,7 +5,7 @@ import 'package:app/Pages/Questionnaire/question_2.dart';
 class QuestionOne extends StatefulWidget {
   List<String> responses = [];
 
-  List<String> nonprofits = [
+  final List<String> nonprofits = [
     "Education",
     "Mental health",
     "Sports",
@@ -281,7 +280,13 @@ class _QuestionOneState extends State<QuestionOne> {
                 top: 30,
                 right: 30,
                 child: TextButton(
-                  onPressed: () => {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) =>
+                                QuestionTwo(responses: widget.responses)));
+                  },
                   child: const Text(
                     "Skip",
                     style:
