@@ -1,9 +1,12 @@
 import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/login_page.dart';
-import 'package:app/Pages/Questionnaire/question_1.dart';
+import 'package:app/Pages/sign_up.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -15,16 +18,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Custom Fonts',
       // Set Raleway as the default app font.
-      theme: ThemeData(
-        fontFamily: 'Poppins', useMaterial3: true,
-
-        // Define the default brightness and colors.
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFd0dacc)
-        ),
-      ),
-      initialRoute: "/home",
+      theme: ThemeData(fontFamily: 'PlayfairDisplay'),
+      initialRoute: "/login",
       routes: {
+        "/signUp":(context) => signUpPage(),
         "/login": (context) => loginPage(),
         "/home": (context) => homePage(),
       },

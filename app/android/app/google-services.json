@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "319297262752",
+    "project_id": "palorahai-auth",
+    "storage_bucket": "palorahai-auth.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319297262752:android:8a455e577566dec1ca65c5",
+        "android_client_info": {
+          "package_name": "com.PalorahAI.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYwE2fagvcP54brdyH5gnOWBzMK3FimfI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
