@@ -1,8 +1,12 @@
 import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/login_page.dart';
+import 'package:app/Pages/sign_up.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -15,10 +19,11 @@ class MyApp extends StatelessWidget {
       title: 'Custom Fonts',
       // Set Raleway as the default app font.
       theme: ThemeData(fontFamily: 'PlayfairDisplay'),
-      initialRoute: "/home",
+      initialRoute: "/login",
       routes: {
+        "/signUp":(context) => signUpPage(),
         "/login": (context) => loginPage(),
-        "/home": (context) =>homePage(),
+        "/home": (context) => homePage(),
       },
     );
   }

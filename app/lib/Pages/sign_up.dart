@@ -3,47 +3,71 @@ import 'package:app/Services/authentication.dart';
 import 'package:app/button.dart';
 import 'package:flutter/material.dart';
 import '../text_field.dart';
-
-class loginPage extends StatefulWidget{
+class signUpPage extends StatefulWidget{
+  
   @override
   State<StatefulWidget> createState() {
-    return _loginPageState();
+    return _signUpState();
   }
 
 }
 
-class _loginPageState extends State<loginPage>{
-
+class _signUpState extends State<signUpPage>{
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
 
-void loginUser() async {
+  @override
+  void dispose() {
+    super.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    nameController.dispose();
+  }
+
+  void signupUser() async {
+
+     String email = emailController.text;
+    String password = passwordController.text;
+
+    if (!email.endsWith('@gmail.com')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Email must be a Gmail address.')),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password must be at least 6 characters long.')),
+      );
+      return;
+    }
+    // set is loading to true.
     setState(() {
       isLoading = true;
     });
     // signup user using our authmethod
-    String res = await AuthMethod().loginUser(
-        email: emailController.text, password: passwordController.text);
-
+    String res = await AuthMethod().signupUser(
+        email: emailController.text,
+        password: passwordController.text,
+        name: nameController.text);
+    // if string return is success, user has been creaded and navigate to next screen other witse show error.
     if (res == "success") {
       setState(() {
         isLoading = false;
       });
-      //navigate to the home screen
+      //navigate to the next screen
       Navigator.pushNamed(context, "/home");
     } else {
       setState(() {
         isLoading = false;
       });
-      // show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Email or password is incorrect.')),
-      );
+    
     }
   }
-
-
+  
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +75,7 @@ void loginUser() async {
       appBar: AppBar(
         title:
          Text(
-          "Login",
+          "Sign Up",
           ),
          ),
          body: SafeArea(
@@ -70,7 +94,7 @@ void loginUser() async {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _title(),
-              _loginForm(),
+              _signUpForm(),
             ],
           ),
         );
@@ -86,7 +110,7 @@ void loginUser() async {
           );
       }
 
-      Widget _loginForm() {
+      Widget _signUpForm() {
     return SizedBox(
       width: MediaQuery.of(context).size.width * .90,
       child: Column(
@@ -95,7 +119,6 @@ void loginUser() async {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Form(
-            
             child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -103,48 +126,57 @@ void loginUser() async {
               children: [
                 TextFieldInput(
                 icon: Icons.person,
+                textEditingController: nameController,
+                hintText: 'Enter your name',
+                textInputType: TextInputType.text),
+            TextFieldInput(
+                icon: Icons.email,
                 textEditingController: emailController,
                 hintText: 'Enter your email',
                 textInputType: TextInputType.text),
             TextFieldInput(
               icon: Icons.lock,
               textEditingController: passwordController,
-              hintText: 'Enter your passord',
+              hintText: 'Enter your password',
               textInputType: TextInputType.text,
               isPass: true,
             ),
-                MyButtons(onTap: loginUser, text: "Log In"),
+                MyButtons(
+                onTap: signupUser,
+                text: "Sign Up"
+                 )
+
               ],
             ),
           ),
-          _signUpOption(),
+          _logInOption(),
         ],
       ),
     );
   }
 
-  Widget _loginButton() {
+  Widget _signUpButton() {
     return SizedBox(
       width: MediaQuery.of(context).size.width * .60,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.pushReplacementNamed(context, "/home");
+          signupUser();
         },
-        child: const Text("Login"),
+        child: const Text("Sign up"),
       ),
     );
   }
 
-  Widget _signUpOption() {
+  Widget _logInOption() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Don't have an account?"),
+        const Text("Already have an account?"),
         TextButton(
           onPressed: () {
-            Navigator.pushNamed(context, "/signUp");
+            Navigator.pushNamed(context, "/login");
           },
-          child: const Text("Sign up"),
+          child: const Text("Log in"),
         ),
       ],
     );
