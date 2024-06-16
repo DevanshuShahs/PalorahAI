@@ -1,6 +1,9 @@
 
+import 'package:app/Pages/home_page.dart';
+import 'package:app/Pages/sign_up.dart';
 import 'package:app/Services/authentication.dart';
 import 'package:app/button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../text_field.dart';
 
@@ -128,7 +131,9 @@ void loginUser() async {
       width: MediaQuery.of(context).size.width * .60,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.pushReplacementNamed(context, "/home");
+           Navigator.push(
+              context,
+              CupertinoPageRoute(builder: (context) => homePage()));
         },
         child: const Text("Login"),
       ),
@@ -142,7 +147,9 @@ void loginUser() async {
         const Text("Don't have an account?"),
         TextButton(
           onPressed: () {
-            Navigator.pushNamed(context, "/signUp");
+             Navigator.push(
+              context,
+              CupertinoPageRoute(builder: (context) => signUpPage()));
           },
           child: const Text("Sign up"),
         ),

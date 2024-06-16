@@ -1,6 +1,8 @@
 
+import 'package:app/Pages/home_page.dart';
 import 'package:app/Services/authentication.dart';
 import 'package:app/button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../text_field.dart';
 class signUpPage extends StatefulWidget{
@@ -59,7 +61,9 @@ class _signUpState extends State<signUpPage>{
         isLoading = false;
       });
       //navigate to the next screen
-      Navigator.pushNamed(context, "/home");
+       Navigator.push(
+              context,
+              CupertinoPageRoute(builder: (context) => homePage()));
     } else {
       setState(() {
         isLoading = false;

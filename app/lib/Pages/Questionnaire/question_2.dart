@@ -65,9 +65,9 @@ class _QuestionTwoState extends State<QuestionTwo> {
                 ),
               ],
             ),
-            Center(
+            const Center(
                 child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(20.0),
               child: Text(
                 "What are your goals?",
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.w700),
@@ -89,7 +89,7 @@ class _QuestionTwoState extends State<QuestionTwo> {
                           : widget.responses.remove(widget.checkbox1);
                     },
                   ),
-                  Text(
+                  const Text(
                     "Organizational Development",
                     style: TextStyle(
                       fontSize: 17,

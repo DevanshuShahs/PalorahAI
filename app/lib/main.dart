@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       title: 'Custom Fonts',
       // Set Raleway as the default app font.
       theme: ThemeData(fontFamily: 'PlayfairDisplay'),
-      initialRoute: "/login",
+      initialRoute: "/home",
       routes: {
         "/signUp":(context) => signUpPage(),
         "/login": (context) => loginPage(),
