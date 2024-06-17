@@ -22,7 +22,7 @@ class _QuestionThreeState extends State<QuestionThree> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text(widget.responses[0]),
+        child: Text(widget.responses.join(', ')),
       ),
     );
   }
