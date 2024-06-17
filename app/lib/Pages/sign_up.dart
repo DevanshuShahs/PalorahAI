@@ -35,14 +35,14 @@ class _signUpState extends State<signUpPage>{
 
     if (!email.endsWith('@gmail.com')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Email must be a Gmail address.')),
+        const SnackBar(content: Text('Email must be a Gmail address.')),
       );
       return;
     }
 
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password must be at least 6 characters long.')),
+        const SnackBar(content: Text('Password must be at least 6 characters long.')),
       );
       return;
     }
@@ -63,7 +63,7 @@ class _signUpState extends State<signUpPage>{
       //navigate to the next screen
        Navigator.push(
               context,
-              CupertinoPageRoute(builder: (context) => homePage()));
+              CupertinoPageRoute(builder: (context) => const homePage()));
     } else {
       setState(() {
         isLoading = false;
@@ -78,7 +78,7 @@ class _signUpState extends State<signUpPage>{
     return Scaffold(
       appBar: AppBar(
         title:
-         Text(
+         const Text(
           "Sign Up",
           ),
          ),
