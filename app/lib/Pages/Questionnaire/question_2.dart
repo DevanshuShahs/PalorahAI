@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:app/Pages/Questionnaire/question_1.dart';
 import 'package:app/Pages/Questionnaire/question_3.dart';
 import 'package:flutter/cupertino.dart';

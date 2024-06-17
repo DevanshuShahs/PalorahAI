@@ -1,3 +1,4 @@
+import 'package:app/Pages/Questionnaire/question_1.dart';
 import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/login_page.dart';
 import 'package:app/Pages/sign_up.dart';
@@ -19,11 +20,12 @@ class MyApp extends StatelessWidget {
       title: 'Custom Fonts',
       // Set Raleway as the default app font.
       theme: ThemeData(fontFamily: 'PlayfairDisplay'),
-      initialRoute: "/home",
+      initialRoute: "/login",
       routes: {
         "/signUp":(context) => signUpPage(),
         "/login": (context) => loginPage(),
         "/home": (context) => homePage(),
+        "/Question1": (context) => QuestionOne(),
       },
     );
   }

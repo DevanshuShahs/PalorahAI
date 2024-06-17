@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Pages/Questionnaire/question_2.dart';
@@ -109,6 +111,8 @@ class QuestionOne extends StatefulWidget {
     "Migrant rights",
     "Pollution control",
   ];
+
+  QuestionOne({super.key});
 
   @override
   State<QuestionOne> createState() {
