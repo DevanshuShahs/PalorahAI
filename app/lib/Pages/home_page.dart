@@ -1,6 +1,7 @@
+import 'package:app/Pages/Questionnaire/question_1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:app/Pages/login_page.dart';
+
 
 class homePage extends StatefulWidget {
   const homePage({super.key});
@@ -84,7 +85,7 @@ class _homePageState extends State<homePage> {
                             onPressed: () {
                               Navigator.push(
               context,
-              CupertinoPageRoute(builder: (context) => loginPage()));
+              CupertinoPageRoute(builder: (context) => QuestionOne()));
                             },
                             child: const Padding(
                               padding: EdgeInsets.all(6.0),
