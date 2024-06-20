@@ -2,10 +2,10 @@
 import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/sign_up.dart';
 import 'package:app/Services/authentication.dart';
-import 'package:app/button.dart';
+import 'package:app/Components/button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../text_field.dart';
+import '../Components/text_field.dart';
 
 class loginPage extends StatefulWidget{
   @override
