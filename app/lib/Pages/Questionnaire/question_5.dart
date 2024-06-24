@@ -1,3 +1,4 @@
+import 'package:app/Pages/Plan.dart';
 import 'package:app/Pages/Questionnaire/question_4.dart';
 import 'package:app/Pages/Questionnaire/question_6.dart';
 import 'package:flutter/cupertino.dart';
@@ -63,7 +64,7 @@ class _QuestionFiveState extends State<QuestionFive> {
                         context,
                         CupertinoPageRoute(
                             builder: (context) =>
-                                QuestionSix(responses: tempResponses))); // Replace NextScreen with the actual next screen class
+                                Plan(responses: tempResponses))); // Replace NextScreen with the actual next screen class
                   },
                 )
               : TextButton(

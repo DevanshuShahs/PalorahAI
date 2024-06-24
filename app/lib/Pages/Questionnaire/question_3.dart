@@ -2,11 +2,7 @@ import 'package:app/Pages/Questionnaire/question_2.dart';
 import 'package:app/Pages/Questionnaire/question_4.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:intl/intl.dart';
-=======
-import 'package:flutter_gemini/flutter_gemini.dart';
->>>>>>> f2b1fb60c2c24229b60d5285a9ee414adc53eaad
 
 class QuestionThree extends StatefulWidget {
   QuestionThree({super.key, required this.responses});
@@ -19,24 +15,17 @@ class QuestionThree extends StatefulWidget {
   }
 }
 
-
 class _QuestionThreeState extends State<QuestionThree> {
-<<<<<<< HEAD
   DateTime? selectedDate;
   TextEditingController descriptionController = TextEditingController();
   bool hasInputtedData = false;
   late List<String> tempResponses;
-=======
-  final gemini = Gemini.instance;
-  bool isChecked = false;
-  String story = "Loading...";
->>>>>>> f2b1fb60c2c24229b60d5285a9ee414adc53eaad
 
   @override
   void initState() {
     super.initState();
-<<<<<<< HEAD
-    tempResponses = List.from(widget.responses); // Create a copy of the responses
+    tempResponses =
+        List.from(widget.responses); // Create a copy of the responses
   }
 
   @override
@@ -56,25 +45,10 @@ class _QuestionThreeState extends State<QuestionThree> {
       setState(() {
         selectedDate = picked;
         _checkInputtedData();
-=======
-    fetchStory();
-  }
-
-  void fetchStory() async {
-    try {
-      final value = await gemini.text("give a 5 step plan that takes into account these parameters for a person trying to start a nonprofit "+ widget.responses.join(', '));
-      setState(() {
-        story = value?.output ?? 'No output';
-      });
-    } catch (e) {
-      setState(() {
-        story = 'Error: $e';
->>>>>>> f2b1fb60c2c24229b60d5285a9ee414adc53eaad
       });
     }
   }
 
-<<<<<<< HEAD
   void _checkInputtedData() {
     setState(() {
       hasInputtedData =
@@ -89,10 +63,11 @@ class _QuestionThreeState extends State<QuestionThree> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-                    Navigator.pop(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) => QuestionTwo(responses: widget.responses)));
+            Navigator.pop(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) =>
+                        QuestionTwo(responses: widget.responses)));
           },
         ),
         actions: [
@@ -101,10 +76,11 @@ class _QuestionThreeState extends State<QuestionThree> {
                   icon: const Icon(Icons.arrow_forward),
                   onPressed: () {
                     if (selectedDate != null) {
-                    tempResponses.add(DateFormat('MM/dd/yyyy').format(selectedDate!));
+                      tempResponses
+                          .add(DateFormat('MM/dd/yyyy').format(selectedDate!));
                     }
                     if (descriptionController.text.isNotEmpty) {
-                    tempResponses.add(descriptionController.text);
+                      tempResponses.add(descriptionController.text);
                     }
                     Navigator.push(
                         context,
@@ -172,21 +148,7 @@ class _QuestionThreeState extends State<QuestionThree> {
             ),
           ],
         ),
-=======
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(story),
->>>>>>> f2b1fb60c2c24229b60d5285a9ee414adc53eaad
       ),
     );
   }
 }
-
-
-// return Scaffold(
-//       body: Center(
-//         child: Text(widget.responses.join(', ')),
-//       ),
-//     );
