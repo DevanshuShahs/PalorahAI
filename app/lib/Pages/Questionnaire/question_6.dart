@@ -19,8 +19,10 @@ class _QuestionSixState extends State<QuestionSix> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text(widget.responses[0]),
+      body: SafeArea(
+        child: Center(
+          child: Text(widget.responses.join(", ")),
+        ),
       ),
     );
   }
