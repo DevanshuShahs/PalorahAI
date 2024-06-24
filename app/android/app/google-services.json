@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:319297262752:android:8a455e577566dec1ca65c5",
+        "mobilesdk_app_id": "1:319297262752:android:f4d1508b80b1568fca65c5",
         "android_client_info": {
-          "package_name": "com.PalorahAI.app"
+          "package_name": "com.PalorahAI.app1"
         }
       },
       "oauth_client": [],

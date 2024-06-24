@@ -4,6 +4,7 @@ import 'package:app/Pages/Questionnaire/question_1.dart';
 import 'package:app/Pages/Questionnaire/question_3.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:animated_icon/animated_icon.dart';
 
 class QuestionTwo extends StatefulWidget {
   QuestionTwo({super.key, required this.responses});
@@ -60,10 +61,33 @@ class _QuestionTwoState extends State<QuestionTwo> {
                             builder: (context) =>
                                 QuestionThree(responses: widget.responses)));
                   },
-                  child: const Icon(
-                    Icons.arrow_right_alt,
-                    size: 36,
-                  ),
+                  child: Stack(children: [
+                    Visibility(
+                      visible: (isChecked1 || isChecked2 || isChecked3),
+                      child:  RotatedBox(
+                        quarterTurns: 3,
+                        child: AnimateIcon(
+            key: UniqueKey(),
+            onTap: () {Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) =>
+                                QuestionThree(responses: widget.responses)));},
+            iconType: IconType.continueAnimation,
+            height: 40,
+            width: 40,
+            animateIcon: AnimateIcons.downArrow,),
+
+                      )
+                    ),
+                    Visibility(
+                      visible: (!isChecked1 && !isChecked2 && !isChecked3),
+                      child: const Text(
+                        "Skip",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    )
+                  ]),
                 ),
               ],
             ),
