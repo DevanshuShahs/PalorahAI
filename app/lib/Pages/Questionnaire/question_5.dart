@@ -69,7 +69,7 @@ class _QuestionFiveState extends State<QuestionFive> {
                         context,
                         CupertinoPageRoute(
                             builder: (context) =>
-                                Plan(responses: tempResponses))); // Replace NextScreen with the actual next screen class
+                                QuestionSix(responses: tempResponses))); // Replace NextScreen with the actual next screen class
                   },
                 )
               : TextButton(
