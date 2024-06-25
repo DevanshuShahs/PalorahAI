@@ -1,6 +1,6 @@
-import 'package:app/Pages/Questionnaire/question_1.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class QuestionSix extends StatefulWidget {
   QuestionSix({super.key, required this.responses});
 
