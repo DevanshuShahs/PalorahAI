@@ -1,13 +1,13 @@
-import 'package:app/Pages/Questionnaire/question_2.dart';
-import 'package:app/Pages/Questionnaire/question_4.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'question_2.dart';
+import 'question_4.dart';
 
 class QuestionThree extends StatefulWidget {
   QuestionThree({super.key, required this.responses});
 
-  List<String> responses;
+  final List<String> responses;
 
   @override
   State<QuestionThree> createState() {
@@ -24,14 +24,23 @@ class _QuestionThreeState extends State<QuestionThree> {
   @override
   void initState() {
     super.initState();
-    tempResponses =
-        List.from(widget.responses); // Create a copy of the responses
+    tempResponses = List.from(widget.responses); // Create a copy of the responses
   }
 
   @override
   void dispose() {
     descriptionController.dispose();
     super.dispose();
+  }
+
+  void _updateResponses() {
+    tempResponses = List.from(widget.responses); // Reset tempResponses to the original
+    if (selectedDate != null) {
+      tempResponses.add(DateFormat('MM/dd/yyyy').format(selectedDate!));
+    }
+    if (descriptionController.text.isNotEmpty) {
+      tempResponses.add(descriptionController.text);
+    }
   }
 
   void _selectDate(BuildContext context) async {
@@ -51,8 +60,7 @@ class _QuestionThreeState extends State<QuestionThree> {
 
   void _checkInputtedData() {
     setState(() {
-      hasInputtedData =
-          selectedDate != null || descriptionController.text.isNotEmpty;
+      hasInputtedData = selectedDate != null || descriptionController.text.isNotEmpty;
     });
   }
 
@@ -66,8 +74,7 @@ class _QuestionThreeState extends State<QuestionThree> {
             Navigator.pop(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) =>
-                        QuestionTwo(responses: widget.responses)));
+                    builder: (context) => QuestionTwo(responses: widget.responses)));
           },
         ),
         actions: [
@@ -75,27 +82,18 @@ class _QuestionThreeState extends State<QuestionThree> {
               ? IconButton(
                   icon: const Icon(Icons.arrow_forward),
                   onPressed: () {
-                    if (selectedDate != null) {
-                      tempResponses
-                          .add(DateFormat('MM/dd/yyyy').format(selectedDate!));
-                    }
-                    if (descriptionController.text.isNotEmpty) {
-                      tempResponses.add(descriptionController.text);
-                    }
+                    _updateResponses();
                     Navigator.push(
                         context,
                         CupertinoPageRoute(
-                            builder: (context) =>
-                                QuestionFour(responses: tempResponses)));
+                            builder: (context) => QuestionFour(responses: tempResponses)));
                   },
                 )
               : TextButton(
                   onPressed: () {
                     Navigator.push(
                         context,
-                        CupertinoPageRoute(
-                            builder: (context) =>
-                                QuestionFour(responses: widget.responses)));
+                        CupertinoPageRoute(builder: (context) => QuestionFour(responses: widget.responses)));
                   },
                   child: const Text(
                     'Skip',
@@ -146,6 +144,13 @@ class _QuestionThreeState extends State<QuestionThree> {
                 _checkInputtedData();
               },
             ),
+            const SizedBox(height: 24),
+            const Text(
+              'Other responses:',
+              style: TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 8),
+            Text(widget.responses.join(', ')),
           ],
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
-import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 
 class Response {
   final String output;
@@ -44,15 +43,6 @@ class _PlanState extends State<Plan> {
 
   @override
   Widget build(BuildContext context) {
-    final parse = <MatchText>[
-      MatchText(
-        pattern: r"^\*{2}(.+)\*{2}$", // a custom pattern to match
-        style: const TextStyle(
-          color: Colors.pink,
-          fontSize: 24,
-        ), // custom style to be applied to this matched text
-      ),
-    ];
     return Scaffold(
       appBar: AppBar(
         title: const Text('Response Screen'),

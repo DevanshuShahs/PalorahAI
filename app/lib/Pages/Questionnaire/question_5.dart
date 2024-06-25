@@ -43,10 +43,14 @@ class _QuestionFiveState extends State<QuestionFive> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-                    Navigator.pop(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) => QuestionFour(responses: widget.responses)));
+                    widget.responses.clear();
+            widget.responses.add("useInitState");
+            Navigator.pop(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) =>
+                        QuestionFour(responses: widget.responses))
+                );
           },
         ),
         actions: [
@@ -124,6 +128,12 @@ class _QuestionFiveState extends State<QuestionFive> {
                 });
               },
             ),
+            const Text(
+              'Other responses:',
+              style: TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 8),
+            Text(widget.responses.join(', ')),
           ],
         ),
       ),

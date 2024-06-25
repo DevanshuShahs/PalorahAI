@@ -1,7 +1,7 @@
-import 'package:app/Pages/Questionnaire/question_3.dart';
-import 'package:app/Pages/Questionnaire/question_5.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'question_3.dart';
+import 'question_5.dart';
 
 class QuestionFour extends StatefulWidget {
   QuestionFour({super.key, required this.responses});
@@ -37,14 +37,17 @@ class _QuestionFourState extends State<QuestionFour> {
   @override
   void initState() {
     super.initState();
-    tempResponses =
-        List.from(widget.responses); // Create a copy of the responses
+    tempResponses = List.from(widget.responses); // Create a copy of the responses
   }
 
-  void _checkInputtedData() {
-    setState(() {
-      // Update the state to reflect whether input has been entered
-    });
+  void _updateResponses() {
+    tempResponses = List.from(widget.responses); // Reset tempResponses to the original
+    if (financialStatus != null) {
+      tempResponses.add(financialStatus!);
+    }
+    if (fundraisingExperience != null) {
+      tempResponses.add(fundraisingExperience!);
+    }
   }
 
   bool get hasInputtedData {
@@ -59,10 +62,9 @@ class _QuestionFourState extends State<QuestionFour> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) =>
-                        QuestionThree(responses: widget.responses)));
+              context,
+              CupertinoPageRoute(builder: (context) => QuestionThree(responses: widget.responses)),
+            );
           },
         ),
         actions: [
@@ -70,30 +72,23 @@ class _QuestionFourState extends State<QuestionFour> {
               ? IconButton(
                   icon: const Icon(Icons.arrow_forward),
                   onPressed: () {
-                    if (financialStatus != null) {
-                      tempResponses.add(financialStatus!);
-                    }
-                    if (fundraisingExperience != null) {
-                      tempResponses.add(fundraisingExperience!);
-                    }
+                    _updateResponses();
                     Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) =>
-                                QuestionFive(responses: tempResponses)));
+                      context,
+                      CupertinoPageRoute(builder: (context) => QuestionFive(responses: tempResponses)),
+                    );
                   },
                 )
               : TextButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) =>
-                                QuestionFour(responses: widget.responses)));
+                      context,
+                      CupertinoPageRoute(builder: (context) => QuestionFive(responses: widget.responses)),
+                    );
                   },
                   child: const Text(
                     'Skip',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.green),
                   ),
                 ),
         ],
@@ -121,7 +116,6 @@ class _QuestionFourState extends State<QuestionFour> {
               onChanged: (newValue) {
                 setState(() {
                   financialStatus = newValue;
-                  _checkInputtedData();
                 });
               },
             ),
@@ -144,7 +138,6 @@ class _QuestionFourState extends State<QuestionFour> {
               onChanged: (newValue) {
                 setState(() {
                   fundraisingExperience = newValue;
-                  _checkInputtedData();
                 });
               },
             ),

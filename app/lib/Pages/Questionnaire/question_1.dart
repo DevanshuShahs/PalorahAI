@@ -121,110 +121,8 @@ class QuestionOne extends StatefulWidget {
 }
 
 class _QuestionOneState extends State<QuestionOne> {
-  List<String> nonprofits = [
-    "Education",
-    "Mental health",
-    "Sports",
-    "Food",
-    "Environmental conservation",
-    "Animal welfare",
-    "Healthcare",
-    "Arts and culture",
-    "Human rights",
-    "Community development",
-    "Disaster relief",
-    "Economic development",
-    "Housing",
-    "International aid",
-    "Legal aid",
-    "Refugee support",
-    "Technology access",
-    "Wildlife conservation",
-    "Youth development",
-    "Senior care",
-    "Gender equality",
-    "Microfinance",
-    "Clean energy",
-    "Literacy",
-    "Peacebuilding",
-    "Veterans support",
-    "Public policy",
-    "Civic engagement",
-    "Homelessness",
-    "Drug rehabilitation",
-    "Disease prevention",
-    "Water sanitation",
-    "Climate action",
-    "Child welfare",
-    "Indigenous rights",
-    "Cultural preservation",
-    "Emergency response",
-    "Food security",
-    "Labor rights",
-    "Social justice",
-    "Urban planning",
-    "Sustainable agriculture",
-    "Transparency and accountability",
-    "Inclusive education",
-    "Orphan care",
-    "Conservation",
-    "Fair trade",
-    "Access to justice",
-    "Refugee resettlement",
-    "Community health",
-    "Science education",
-    "Entrepreneurship",
-    "Armed forces support",
-    "Consumer protection",
-    "Public health",
-    "Humanitarian aid",
-    "Digital literacy",
-    "Community empowerment",
-    "Peace education",
-    "Prison reform",
-    "Environmental justice",
-    "Inclusive employment",
-    "Immigration support",
-    "Maternal health",
-    "Art therapy",
-    "Child protection",
-    "Clean water",
-    "Democracy promotion",
-    "Equal access",
-    "Health education",
-    "Rural development",
-    "Space exploration",
-    "Freedom of speech",
-    "Justice reform",
-    "Human trafficking prevention",
-    "Nutrition",
-    "STEM education",
-    "Community resilience",
-    "Sport for development",
-    "Waste management",
-    "Historic preservation",
-    "Access to information",
-    "Disability rights",
-    "Media literacy",
-    "Primate conservation",
-    "Social entrepreneurship",
-    "Inclusive design",
-    "Peacekeeping",
-    "Consumer rights",
-    "Tuberculosis eradication",
-    "Gender equity",
-    "Veterinary care",
-    "Safe housing",
-    "Climate resilience",
-    "Music therapy",
-    "Community renewal",
-    "Marine conservation",
-    "Environmental education",
-    "Social services",
-    "Urban revitalization",
-    "Migrant rights",
-    "Pollution control",
-  ];
+  late List<String> nonprofits;
+    
 
   final myController = TextEditingController();
 
@@ -234,6 +132,8 @@ class _QuestionOneState extends State<QuestionOne> {
 
     // Start listening to changes.
     myController.addListener(_textUpdate);
+
+    nonprofits = List.from(widget.nonprofits);
   }
 
   @override
@@ -245,16 +145,22 @@ class _QuestionOneState extends State<QuestionOne> {
   }
 
   void _textUpdate() {
-    final text = myController.text;
-    setState(() {
-      nonprofits = text.isEmpty
-          ? widget.nonprofits //original list
-          : widget.nonprofits
-              .where((nonprofit) =>
-                  nonprofit.toLowerCase().startsWith(text.toLowerCase()))
-              .toList();
-    });
-  }
+  final text = myController.text.trim();
+  setState(() {
+    if (text.isEmpty) {
+      nonprofits = List.from(widget.nonprofits); // Original list
+    } else {
+      nonprofits = widget.nonprofits
+          .where((nonprofit) => nonprofit.toLowerCase().startsWith(text.toLowerCase()))
+          .toList();
+      // If the text is not in the nonprofits list, add i
+      if (!nonprofits.any((nonprofit) => nonprofit.toLowerCase() == text.toLowerCase())) {
+        nonprofits.add(text);
+      }
+    }
+  });
+}
+
 
   void _changeText(text) {
     final _newValue = text;
@@ -267,6 +173,7 @@ class _QuestionOneState extends State<QuestionOne> {
   }
 
   void _nextPage() {
+    widget.responses.clear();
     widget.responses.add(myController.text);
     Navigator.push(
         context,
@@ -319,17 +226,6 @@ class _QuestionOneState extends State<QuestionOne> {
                       alignment: Alignment.topCenter,
                       child: TextField(
                         controller: myController,
-                        onChanged: (text) {
-                          setState(() {
-                            nonprofits = text.isEmpty
-                                ? widget.nonprofits //original list
-                                : widget.nonprofits
-                                    .where((nonprofit) => nonprofit
-                                        .toLowerCase()
-                                        .startsWith(text.toLowerCase()))
-                                    .toList();
-                          });
-                        },
                         decoration: const InputDecoration(
                           hintText: 'Search categories by first letter',
                           prefixIcon: Icon(Icons.search),
@@ -386,6 +282,7 @@ Widget listNonprofits(
             title: Text(nonprofits[index]),
             onTap: () {
               changeText(nonprofits[index]);
+              nonprofits.remove(nonprofits[index]);
             },
           )),
         );
