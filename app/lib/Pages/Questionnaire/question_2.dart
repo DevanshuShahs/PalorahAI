@@ -193,7 +193,13 @@ class _QuestionTwoState extends State<QuestionTwo> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(widget.responses.join(', ')),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(widget.responses.join(', ')),
+              ),
+            ),
           ],
         ),
       ),
