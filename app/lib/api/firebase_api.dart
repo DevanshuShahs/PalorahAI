@@ -2,7 +2,6 @@ import 'package:app/Pages/home_page.dart';
 import 'package:app/main.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print(message.notification?.title);
