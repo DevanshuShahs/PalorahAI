@@ -2,13 +2,11 @@ import 'package:app/Pages/Questionnaire/question_1.dart';
 import 'package:app/Pages/createdPlanHomePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 class homePage extends StatefulWidget {
-  final RemoteMessage? notificationMessage;
-  const homePage({super.key, this.notificationMessage});
+  const homePage({super.key});
 
   @override
   State<homePage> createState() => _homePageState();
@@ -93,8 +91,6 @@ class _homePageState extends State<homePage> {
                             child: Padding(
                               padding: const EdgeInsets.all(12.0),
                               child: Text(
-                                widget.notificationMessage?.notification
-                                        ?.title ??
                                     'Build an organization without limits',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
