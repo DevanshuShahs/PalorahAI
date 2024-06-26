@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Response {
   final String output;
@@ -19,11 +20,10 @@ class Plan extends StatefulWidget {
 }
 
 class _PlanState extends State<Plan> {
-  String story = "**Loading...**";
+  String? story;
   final gemini = Gemini.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
-
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _PlanState extends State<Plan> {
     }
   }
 
- void savePlanToFirestore(String plan) async {
+  void savePlanToFirestore(String plan) async {
     try {
       User? user = auth.currentUser;
       if (user != null) {
@@ -64,6 +64,57 @@ class _PlanState extends State<Plan> {
     }
   }
 
+  Widget buildLoadingScreen() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(6, (index) => buildShimmerPlaceholder()),
+      ),
+    );
+  }
+
+  Widget buildShimmerPlaceholder() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: 20.0,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  height: 20.0,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  height: 20.0,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,22 +129,14 @@ class _PlanState extends State<Plan> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  story,
-                  style: const TextStyle(fontSize: 12),
-                ),
+                if (story == null)
+                  buildLoadingScreen()
+                else
+                  Text(
+                    story!,
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 const SizedBox(height: 16),
-                const SizedBox(height: 8),
-                // Expanded(
-                //   child: ListView.builder(
-                //     itemCount: widget.responses.length,
-                //     itemBuilder: (context, index) {
-                //       return ListTile(
-                //         title: Text(widget.responses[index]),
-                //       );
-                //     },
-                //   ),
-                // ),
               ],
             ),
           ),
