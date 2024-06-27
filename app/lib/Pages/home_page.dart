@@ -159,7 +159,7 @@ class _homePageState extends State<homePage> with TickerProviderStateMixin {
                           Navigator.push(
                               context,
                               CupertinoPageRoute(
-                                  builder: (context) => loginPage()));
+                                  builder: (context) => QuestionOne()));
                         },
                         child: const Padding(
                           padding: EdgeInsets.all(6.0),
