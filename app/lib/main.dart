@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       // Set Raleway as the default app font.
       theme: ThemeData(fontFamily: 'Poppins'),
       navigatorKey: navigatorKey,
-      initialRoute: "/login",
+      initialRoute: "/home",
       routes: {
         "/signUp":(context) => signUpPage(),
         "/login": (context) => loginPage(),
