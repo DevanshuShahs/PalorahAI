@@ -57,7 +57,7 @@ class _QuestionFiveState extends State<QuestionFive> {
           hasInputtedData
               ? IconButton(
                   icon: const Icon(Icons.arrow_forward),
-                  onPressed: () {
+                  onPressed: () { 
                     if (membershipCount != null && membershipCount!.isNotEmpty) {
                       tempResponses.add(membershipCount!);
                     }

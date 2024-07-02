@@ -1,25 +1,19 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'question_3.dart';
+import '../shared_widgets.dart';
 import 'question_5.dart';
 
-// ignore: must_be_immutable
 class QuestionFour extends StatefulWidget {
-  QuestionFour({super.key, required this.responses});
+  final List<String> responses;
 
-  List<String> responses;
+  const QuestionFour({Key? key, required this.responses}) : super(key: key);
 
   @override
-  State<QuestionFour> createState() {
-    return _QuestionFourState();
-  }
+  _QuestionFourState createState() => _QuestionFourState();
 }
 
 class _QuestionFourState extends State<QuestionFour> {
-  bool isChecked = false;
   String? financialStatus;
   String? fundraisingExperience;
-  late List<String> tempResponses;
 
   final List<String> financialStatusOptions = [
     'Very stable',
@@ -35,122 +29,76 @@ class _QuestionFourState extends State<QuestionFour> {
     'Advanced'
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    tempResponses = List.from(widget.responses); // Create a copy of the responses
-  }
-
   void _updateResponses() {
-    tempResponses = List.from(widget.responses); // Reset tempResponses to the original
-    if (financialStatus != null) {
-      tempResponses.add(financialStatus!);
-    }
-    if (fundraisingExperience != null) {
-      tempResponses.add(fundraisingExperience!);
-    }
-  }
-
-  bool get hasInputtedData {
-    return financialStatus != null || fundraisingExperience != null;
+    List<String> newResponses = [...widget.responses];
+    if (financialStatus != null) newResponses.add(financialStatus!);
+    if (fundraisingExperience != null) newResponses.add(fundraisingExperience!);
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => QuestionFive(responses: newResponses),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(
-              context,
-              CupertinoPageRoute(builder: (context) => QuestionThree(responses: widget.responses)),
-            );
-          },
-        ),
-        actions: [
-          hasInputtedData
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: () {
-                    _updateResponses();
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(builder: (context) => QuestionFive(responses: tempResponses)),
-                    );
-                  },
-                )
-              : TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(builder: (context) => QuestionFive(responses: widget.responses)),
-                    );
-                  },
-                  child: const Text(
-                    'Skip',
-                    style: TextStyle(color: Colors.green),
-                  ),
-                ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      appBar: AppBar(title: Text('Financial Status')),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'What is the current financial status of your organization?',
-              style: TextStyle(fontSize: 18),
+            QuestionnaireProgress(currentStep: 4, totalSteps: 6),
+            SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(child: Text('What is the current financial status of your organization?', style: Theme.of(context).textTheme.titleLarge)),
+                InfoTooltip(message: 'This helps us understand your financial needs.'),
+              ],
             ),
-            const SizedBox(height: 8),
-            DropdownButton<String>(
+            SizedBox(height: 16),
+            CustomDropdown<String>(
               value: financialStatus,
-              hint: const Text('Select financial status'),
-              isExpanded: true,
-              items: financialStatusOptions.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+              items: financialStatusOptions,
+              hint: 'Select financial status',
               onChanged: (newValue) {
                 setState(() {
                   financialStatus = newValue;
                 });
               },
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'How much experience do you have in fundraising and grant acquisition?',
-              style: TextStyle(fontSize: 18),
+            SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(child: Text('How much experience do you have in fundraising and grant acquisition?', style: Theme.of(context).textTheme.titleLarge)),
+                InfoTooltip(message: 'This helps us tailor our recommendations to your experience level.'),
+              ],
             ),
-            const SizedBox(height: 8),
-            DropdownButton<String>(
+            SizedBox(height: 16),
+            CustomDropdown<String>(
               value: fundraisingExperience,
-              hint: const Text('Select experience level'),
-              isExpanded: true,
-              items: fundraisingExperienceOptions.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+              items: fundraisingExperienceOptions,
+              hint: 'Select experience level',
               onChanged: (newValue) {
                 setState(() {
                   fundraisingExperience = newValue;
                 });
               },
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Other responses:',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 8),
+            SizedBox(height: 24),
+            Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
             Text(widget.responses.join(', ')),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _updateResponses,
+        child: Icon(Icons.arrow_forward),
       ),
     );
   }

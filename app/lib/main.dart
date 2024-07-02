@@ -17,23 +17,22 @@ void main() async {
   runApp(MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
-      
       title: 'Custom Fonts',
       // Set Raleway as the default app font.
-      theme: ThemeData(fontFamily: 'Poppins'),
+      theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFD0DACC)),
+          useMaterial3: true,
+          fontFamily: 'Poppins'),
       navigatorKey: navigatorKey,
-      initialRoute: "/home",
+      initialRoute: "/Question1",
       routes: {
-        "/signUp":(context) => signUpPage(),
+        "/signUp": (context) => signUpPage(),
         "/login": (context) => loginPage(),
         "/home": (context) => homePage(),
         "/Question1": (context) => QuestionOne(),
@@ -41,3 +40,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

@@ -1,100 +1,76 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:animated_icon/animated_icon.dart';
-import 'question_1.dart';
+import '../shared_widgets.dart';
 import 'question_3.dart';
 
 class QuestionTwo extends StatefulWidget {
-  QuestionTwo({super.key, required this.responses});
-
   final List<String> responses;
+
+  const QuestionTwo({Key? key, required this.responses}) : super(key: key);
+
+  @override
+  _QuestionTwoState createState() => _QuestionTwoState();
+}
+
+class _QuestionTwoState extends State<QuestionTwo> {
   final List<String> goals = [
     "Organizational Development",
     "Community Engagement",
     "Increased Funding"
   ];
-
-  @override
-  State<QuestionTwo> createState() => _QuestionTwoState();
-}
-
-class _QuestionTwoState extends State<QuestionTwo> {
   List<bool> isChecked = [false, false, false];
-  late List<String> tempResponses;
-
-  @override
-  void initState() {
-    super.initState();
-    tempResponses = List.from(widget.responses);
-  }
 
   void _updateResponses() {
-    tempResponses = List.from(widget.responses);
-    for (int i = 0; i < widget.goals.length; i++) {
-      if (isChecked[i]) {
-        tempResponses.add(widget.goals[i]);
-      } else {
-        tempResponses.remove(widget.goals[i]);
-      }
+    List<String> selectedGoals = [];
+    for (int i = 0; i < goals.length; i++) {
+      if (isChecked[i]) selectedGoals.add(goals[i]);
     }
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => QuestionThree(
+          responses: [...widget.responses, ...selectedGoals],
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Your Goals"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _updateResponses();
-              Navigator.push(
-                context,
-                CupertinoPageRoute(builder: (context) => QuestionThree(responses: tempResponses)),
+      appBar: AppBar(title: Text('Your Goals')),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            QuestionnaireProgress(currentStep: 2, totalSteps: 6),
+            SizedBox(height: 24),
+            Text('What are your goals?', style: Theme.of(context).textTheme.titleLarge),
+            SizedBox(height: 16),
+            ...List.generate(goals.length, (index) {
+              return CheckboxListTile(
+                title: Text(goals[index]),
+                value: isChecked[index],
+                onChanged: (bool? value) {
+                  setState(() {
+                    isChecked[index] = value ?? false;
+                  });
+                },
+                secondary: InfoTooltip(message: 'Selecting this goal will help us tailor our recommendations.'),
               );
-            },
-            child: Text(isChecked.contains(true) ? "Next" : "Skip"),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "What are your goals?",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              ...List.generate(
-                widget.goals.length,
-                (index) => CheckboxListTile(
-                  title: Text(widget.goals[index]),
-                  value: isChecked[index],
-                  onChanged: (bool? value) {
-                    setState(() {
-                      isChecked[index] = value ?? false;
-                    });
-                  },
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Other responses:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(widget.responses.join(', ')),
-            ],
-          ),
+            }),
+            SizedBox(height: 24),
+            Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
+            Text(widget.responses.join(', ')),
+          ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _updateResponses,
+        child: Icon(Icons.arrow_forward),
       ),
     );
   }
