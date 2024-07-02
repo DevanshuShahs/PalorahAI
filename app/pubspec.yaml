@@ -36,6 +36,8 @@ dependencies:
   firebase_analytics: ^11.0.1
   flutter_gemini: ^2.0.4
 
+  provider: ^6.0.0
+
   shimmer: ^2.0.0
 
   # The following adds the Cupertino Icons font to your application.

@@ -1,6 +1,7 @@
+import 'package:app/Components/info_tooltip.dart';
+import 'package:app/Components/progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../shared_widgets.dart';
 import 'question_4.dart';
 
 class QuestionThree extends StatefulWidget {

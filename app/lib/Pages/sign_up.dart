@@ -63,7 +63,7 @@ class _signUpState extends State<signUpPage>{
       //navigate to the next screen
        Navigator.push(
               context,
-              CupertinoPageRoute(builder: (context) => const homePage()));
+              CupertinoPageRoute(builder: (context) => homePage()));
     } else {
       setState(() {
         isLoading = false;

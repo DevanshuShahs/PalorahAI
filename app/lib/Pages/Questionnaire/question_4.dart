@@ -1,5 +1,7 @@
+import 'package:app/Components/custom_dropdown.dart';
+import 'package:app/Components/info_tooltip.dart';
+import 'package:app/Components/progress_bar.dart';
 import 'package:flutter/material.dart';
-import '../shared_widgets.dart';
 import 'question_5.dart';
 
 class QuestionFour extends StatefulWidget {

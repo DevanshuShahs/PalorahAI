@@ -1,141 +1,116 @@
-import 'package:app/Pages/Questionnaire/question_4.dart';
-import 'package:app/Pages/Questionnaire/question_6.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:app/Components/custom_dropdown.dart';
+import 'package:app/Components/info_tooltip.dart';
+import 'package:app/Components/progress_bar.dart';
 import 'package:flutter/material.dart';
+import 'question_6.dart';
 
-// ignore: must_be_immutable
 class QuestionFive extends StatefulWidget {
-  QuestionFive({super.key, required this.responses});
+  final List<String> responses;
 
-  List<String> responses;
+  const QuestionFive({Key? key, required this.responses}) : super(key: key);
 
   @override
-  State<QuestionFive> createState() {
-    return _QuestionFiveState();
-  }
+  _QuestionFiveState createState() => _QuestionFiveState();
 }
 
 class _QuestionFiveState extends State<QuestionFive> {
   String? membershipCount;
   String? organizationStructure;
-  late List<String> tempResponses;
 
-  @override
-  void initState() {
-    super.initState();
-    tempResponses = List.from(widget.responses); // Create a copy of the responses
-  }
+  final List<String> membershipCountOptions = [
+    '1-10',
+    '11-50',
+    '51-100',
+    '101-500',
+    '500+'
+  ];
 
-  void _checkInputtedData() {
-    setState(() {
-      // This function will call setState to update the UI
-    });
-  }
+  final List<String> organizationStructureOptions = [
+    'Board of Directors',
+    'Executive Leadership',
+    'Hierarchical',
+    'Flat',
+    'Matrix'
+  ];
 
-  bool get hasInputtedData {
-    return membershipCount != null && membershipCount!.isNotEmpty || organizationStructure != null && organizationStructure!.isNotEmpty;
+  void _updateResponses() {
+    List<String> newResponses = [...widget.responses];
+    if (membershipCount != null) newResponses.add(membershipCount!);
+    if (organizationStructure != null) newResponses.add(organizationStructure!);
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => QuestionSix(responses: newResponses),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Organization Details'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-                    widget.responses.clear();
-            widget.responses.add("useInitState");
-            Navigator.pop(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) =>
-                        QuestionFour(responses: widget.responses))
-                );
+            Navigator.pop(context);
           },
         ),
-        actions: [
-          hasInputtedData
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: () { 
-                    if (membershipCount != null && membershipCount!.isNotEmpty) {
-                      tempResponses.add(membershipCount!);
-                    }
-                    if (organizationStructure != null && organizationStructure!.isNotEmpty) {
-                      tempResponses.add(organizationStructure!);
-                    }
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) =>
-                                QuestionSix(responses: tempResponses))); // Replace NextScreen with the actual next screen class
-                  },
-                )
-              : TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) =>
-                                QuestionSix(responses: widget.responses))); // Replace NextScreen with the actual next screen class
-                  },
-                  child: const Text(
-                    'Skip',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'What is the current membership count of your organization?',
-              style: TextStyle(fontSize: 18),
+            const QuestionnaireProgress(currentStep: 5, totalSteps: 6),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(child: Text('What is the current membership count of your organization?', style: Theme.of(context).textTheme.titleLarge)),
+                const InfoTooltip(message: 'This helps us understand the scale of your organization.'),
+              ],
             ),
-            const SizedBox(height: 8),
-            TextField(
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Enter membership count here...',
-              ),
-              onChanged: (text) {
+            const SizedBox(height: 16),
+            CustomDropdown<String>(
+              value: membershipCount,
+              items: membershipCountOptions,
+              hint: 'Select membership count',
+              onChanged: (newValue) {
                 setState(() {
-                  membershipCount = text;
-                  _checkInputtedData();
+                  membershipCount = newValue;
                 });
               },
             ),
             const SizedBox(height: 24),
-            const Text(
-              'What is the organization structure of your non-profit?',
-              style: TextStyle(fontSize: 18),
+            Row(
+              children: [
+                Expanded(child: Text('What is the organization structure of your non-profit?', style: Theme.of(context).textTheme.titleLarge)),
+                const InfoTooltip(message: 'This helps us understand your organizational setup.'),
+              ],
             ),
-            const SizedBox(height: 8),
-            TextField(
-              maxLines: 4,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Enter organization structure here...',
-              ),
-              onChanged: (text) {
+            const SizedBox(height: 16),
+            CustomDropdown<String>(
+              value: organizationStructure,
+              items: organizationStructureOptions,
+              hint: 'Select organization structure',
+              onChanged: (newValue) {
                 setState(() {
-                  organizationStructure = text;
-                  _checkInputtedData();
+                  organizationStructure = newValue;
                 });
               },
             ),
-            const Text(
-              'Other responses:',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 24),
+            Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
             Text(widget.responses.join(', ')),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _updateResponses,
+        child: const Icon(Icons.arrow_forward),
       ),
     );
   }

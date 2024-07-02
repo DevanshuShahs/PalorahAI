@@ -1,22 +1,19 @@
-import 'package:app/Pages/plan.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:app/Components/info_tooltip.dart';
+import 'package:app/Components/progress_bar.dart';
 import 'package:flutter/material.dart';
+import '../plan.dart';
 
-// ignore: must_be_immutable
 class QuestionSix extends StatefulWidget {
-  QuestionSix({super.key, required this.responses});
+  final List<String> responses;
 
-  List<String> responses;
+  const QuestionSix({Key? key, required this.responses}) : super(key: key);
 
   @override
-  State<QuestionSix> createState() {
-    return _QuestionSixState();
-  }
+  _QuestionSixState createState() => _QuestionSixState();
 }
 
 class _QuestionSixState extends State<QuestionSix> {
   List<String> selectedGoals = [];
-  late List<String> tempResponses;
 
   final List<String> financialGoals = [
     'Increase Donations',
@@ -41,12 +38,6 @@ class _QuestionSixState extends State<QuestionSix> {
     'Maximize Impact'
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    tempResponses = List.from(widget.responses);
-  }
-
   void toggleSelection(String goal) {
     setState(() {
       if (selectedGoals.contains(goal)) {
@@ -57,72 +48,82 @@ class _QuestionSixState extends State<QuestionSix> {
     });
   }
 
+  void _updateResponses() {
+    List<String> newResponses = [...widget.responses, ...selectedGoals];
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => Plan(responses: newResponses),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Financial Goals'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              tempResponses.addAll(selectedGoals);
-              // Navigate to the next screen or perform an action
-              Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) =>
-                                Plan(responses: tempResponses)));
-            },
-            child: const Text(
-              'Next',
-              style: TextStyle(color: Colors.green),
-            ),
-          ),
-        ],
+        title: Text('Financial Goals'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'What are your financial goals for your non-profit organization? (Select all that apply)',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Wrap(
-                    spacing: 4.0,
-                    runSpacing: 4.0,
-                    children: financialGoals.map((goal) {
-                      final isSelected = selectedGoals.contains(goal);
-                      return FilterChip(
-                        label: Text(goal, style: const TextStyle(fontSize: 12),),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          toggleSelection(goal);
-                        },
-                        selectedColor: Colors.greenAccent,
-                        backgroundColor: Colors.grey[200],
-                        checkmarkColor: Colors.white,
-                      );
-                    }).toList(),
+              QuestionnaireProgress(currentStep: 6, totalSteps: 6),
+              SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'What are your financial goals for your non-profit organization?',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                   ),
-                ),
+                  InfoTooltip(message: 'Select all that apply. These goals will help us tailor our recommendations.'),
+                ],
               ),
-              const SizedBox(height: 16),
-              Center(
-                child: Text(
-                  'Selected Goals: ${selectedGoals.join(", ")}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
+              SizedBox(height: 16),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: financialGoals.map((goal) {
+                  final isSelected = selectedGoals.contains(goal);
+                  return FilterChip(
+                    label: Text(goal, style: TextStyle(fontSize: 14)),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      toggleSelection(goal);
+                    },
+                    selectedColor: Theme.of(context).colorScheme.secondary,
+                    backgroundColor: Theme.of(context).chipTheme.backgroundColor,
+                    checkmarkColor: Theme.of(context).colorScheme.onSecondary,
+                  );
+                }).toList(),
               ),
+              SizedBox(height: 24),
+              Text('Selected Goals:', style: Theme.of(context).textTheme.titleMedium),
+              Text(selectedGoals.isEmpty ? 'None selected' : selectedGoals.join(", ")),
+              SizedBox(height: 24),
+              Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
+              Text(widget.responses.join(', ')),
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: selectedGoals.isNotEmpty ? _updateResponses : null,
+        child: Icon(Icons.arrow_forward),
+        backgroundColor: selectedGoals.isNotEmpty ? null : Colors.grey,
       ),
     );
   }

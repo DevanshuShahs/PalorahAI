@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           fontFamily: 'Poppins'),
       navigatorKey: navigatorKey,
-      initialRoute: "/Question1",
+      initialRoute: "/login",
       routes: {
         "/signUp": (context) => signUpPage(),
         "/login": (context) => loginPage(),

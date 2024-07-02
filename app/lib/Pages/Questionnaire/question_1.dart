@@ -1,9 +1,10 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:app/Components/info_tooltip.dart';
+import 'package:app/Components/progress_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Pages/Questionnaire/question_2.dart';
-import '../shared_widgets.dart';
 
 class QuestionOne extends StatefulWidget {
   List<String> responses = [];
@@ -372,7 +373,7 @@ class _QuestionOneState extends State<QuestionOne> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              QuestionnaireProgress(currentStep: 1, totalSteps: 4),
+              const QuestionnaireProgress(currentStep: 1, totalSteps: 6),
               const SizedBox(height: 24),
               Row(
                 children: [
@@ -382,7 +383,7 @@ class _QuestionOneState extends State<QuestionOne> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  InfoTooltip(message: 'Select or enter the category that best describes your non-profit\'s main focus.'),
+                  const InfoTooltip(message: 'Select or enter the category that best describes your non-profit\'s main focus.'),
                 ],
               ),
               const SizedBox(height: 16),
@@ -390,10 +391,10 @@ class _QuestionOneState extends State<QuestionOne> {
                 controller: myController,
                 decoration: InputDecoration(
                   hintText: 'Search categories by first letter',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.search),
+                  border: const OutlineInputBorder(),
                   filled: true,
-                  fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 ),
               ),
               const SizedBox(height: 16),
@@ -418,7 +419,7 @@ class _QuestionOneState extends State<QuestionOne> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: myController.text.isEmpty ? null : _nextPage,
-        child: Icon(Icons.arrow_forward),
+        child: const Icon(Icons.arrow_forward),
       ),
     );
   }
