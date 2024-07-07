@@ -4,10 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shimmer/shimmer.dart';
 
-class Response {
-  final String output;
+class PlanStep {
+  final String title;
+  final List<String> substeps;
+  bool isCompleted;
 
-  Response({required this.output});
+  PlanStep({required this.title, required this.substeps, this.isCompleted = false});
 }
 
 class Plan extends StatefulWidget {
@@ -20,7 +22,7 @@ class Plan extends StatefulWidget {
 }
 
 class _PlanState extends State<Plan> {
-  String? story;
+  List<PlanStep>? planSteps;
   final gemini = Gemini.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -28,32 +30,66 @@ class _PlanState extends State<Plan> {
   @override
   void initState() {
     super.initState();
-    fetchStory(); // Fetch the story when the widget is initialized
+    fetchStory();
   }
 
   void fetchStory() async {
-    try {
-      final value = await gemini.text(
-          "give a 5 step plan that takes into account these parameters for a person trying to start a nonprofit " +
-              widget.responses.join(', '));
+  try {
+    final value = await gemini.text(
+        "give a 5 step plan that takes into account these parameters for a person trying to start a nonprofit " +
+            widget.responses.join(', '));
+    if (value != null && value.output != null) {
       setState(() {
-        story = value?.output ?? 'No output';
+        planSteps = parsePlanSteps(value.output!);
       });
-      savePlanToFirestore(value?.output ?? 'No output');
-    } catch (e) {
+      savePlanToFirestore(planSteps!);
+    } else {
       setState(() {
-        story = 'Error: $e';
+        planSteps = [PlanStep(title: 'No output', substeps: [])];
       });
     }
+  } catch (e) {
+    setState(() {
+      planSteps = [PlanStep(title: 'Error: $e', substeps: [])];
+    });
+  }
+}
+
+
+  List<PlanStep> parsePlanSteps(String output) {
+    List<PlanStep> steps = [];
+    List<String> lines = output.split('\n');
+    PlanStep? currentStep;
+
+    for (String line in lines) {
+      if (line.trim().startsWith("**Step")) {
+        if (currentStep != null) {
+          steps.add(currentStep);
+        }
+        currentStep = PlanStep(title: line.trim(), substeps: []);
+      } else if (currentStep != null && line.trim().isNotEmpty) {
+        currentStep.substeps.add(line.trim());
+      }
+    }
+    
+    if (currentStep != null) {
+      steps.add(currentStep);
+    }
+
+    return steps;
   }
 
-  void savePlanToFirestore(String plan) async {
+  void savePlanToFirestore(List<PlanStep> steps) async {
     try {
       User? user = auth.currentUser;
       if (user != null) {
         await firestore.collection('plans').add({
           'userId': user.uid,
-          'plan': plan,
+          'plan': steps.map((step) => {
+            'title': step.title,
+            'substeps': step.substeps,
+            'isCompleted': step.isCompleted
+          }).toList(),
           'timestamp': FieldValue.serverTimestamp(),
         });
       } else {
@@ -129,19 +165,52 @@ class _PlanState extends State<Plan> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (story == null)
+                if (planSteps == null)
                   buildLoadingScreen()
                 else
-                  Text(
-                    story!,
-                    style: const TextStyle(fontSize: 12),
-                  ),
+                  ...planSteps!.map((step) => buildStepWithCheckbox(step)).toList(),
                 const SizedBox(height: 16),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildStepWithCheckbox(PlanStep step) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Checkbox(
+              value: step.isCompleted,
+              onChanged: (bool? value) {
+                setState(() {
+                  step.isCompleted = value ?? false;
+                });
+                // Optionally update Firestore here
+              },
+            ),
+            Expanded(
+              child: Text(
+                step.title,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        ...step.substeps.map((substep) => Padding(
+          padding: const EdgeInsets.only(left: 32.0),
+          child: Text(
+            substep,
+            style: const TextStyle(fontSize: 12),
+          ),
+        )).toList(),
+        SizedBox(height: 8),
+      ],
     );
   }
 }
