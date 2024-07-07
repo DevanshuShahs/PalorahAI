@@ -21,7 +21,7 @@ class homePage extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
             if (userPlanProvider.hasExistingPlan) {
-              return const createdPlanHomePage();
+              return const CreatedPlanHomePage();
             }
             return Stack(
               children: [

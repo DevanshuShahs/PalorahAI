@@ -122,3 +122,32 @@ class UserPlanProvider with ChangeNotifier {
     }
   }
 }
+
+Future<String> fetchUserName() async {
+  try {
+    // Get the current user
+    User? user = FirebaseAuth.instance.currentUser;
+    
+    if (user != null) {
+      // Get a reference to the user's document in Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      // Check if the document exists and has a 'name' field
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        if (userData.containsKey('name')) {
+          return userData['name'] as String;
+        }
+      }
+    }
+    
+    // Return a default value if user is not logged in, document doesn't exist, or 'name' field is missing
+    return 'Guest';
+  } catch (e) {
+    print('Error fetching user name: $e');
+    return 'Guest';
+  }
+}

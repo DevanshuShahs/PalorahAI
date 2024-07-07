@@ -1,17 +1,18 @@
 import 'package:app/Pages/userPlan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import '../Services/authentication.dart';
 
-class createdPlanHomePage extends StatefulWidget {
-  const createdPlanHomePage({super.key});
+class CreatedPlanHomePage extends StatefulWidget {
+  const CreatedPlanHomePage({super.key});
 
   @override
-  State<createdPlanHomePage> createState() => _createdPlanHomePageState();
+  State<CreatedPlanHomePage> createState() => _CreatedPlanHomePageState();
 }
 
-class _createdPlanHomePageState extends State<createdPlanHomePage>
+class _CreatedPlanHomePageState extends State<CreatedPlanHomePage>
     with TickerProviderStateMixin {
-   late AnimationController _expandController;
+  late AnimationController _expandController;
   late AnimationController _drawController;
   late Animation<double> _expandAnimation;
   late Animation<double> _drawAnimation;
@@ -56,102 +57,74 @@ class _createdPlanHomePageState extends State<createdPlanHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background color
-          Container(
-            color: const Color(0xFFD0DACC),
-          ),
-          // Content
-          Center(
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [ 
+              SizedBox(height: 20),
+              Row(
                 children: [
-                  const Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Text(
-                        'Build an organization without limits',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25,
-                            color: Color(0xFF25301E)),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage('images/PCLogo.png'),
                   ),
-                  const Flexible(
-                    child: Text(
-                      "Build and scale with confidence. From a powerful" +
-                          " financial advisor to advanced organization solutions—we’ve got you covered",
-                      style: TextStyle(
-                        color: Color(0xFF25301E),
-                        fontSize: 15,
-                        fontStyle: FontStyle.italic,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 30, top: 20),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shadowColor: Colors.greenAccent,
-                          foregroundColor: Colors.black,
-                          backgroundColor: const Color(0xFF7F9289),
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32.0)),
-                          minimumSize: const Size(250, 60),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) => userPlan()));
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(6.0),
-                          child: Text(
-                            'See Plan',
-                            style: TextStyle(
-                                color: Color(0xFF25301E),
-                                fontSize: 25,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ),
-                    ),
+                  SizedBox(width: 15),
+                  FutureBuilder<String>(
+                    future: fetchUserName(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hello again!',
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                            Text(
+                              snapshot.data ?? 'Guest',
+                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              'FINANCIAL BEGINNER',
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ],
+                        );
+                      }
+                    },
                   ),
                 ],
               ),
-            ),
+              
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Add functionality for viewing plan
+                },
+                child: Text('View plan', style: TextStyle(fontSize: 18)),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  // Add functionality for creating new plan
+                },
+                child: Text('Create new plan', style: TextStyle(fontSize: 18)),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+              ),
+            ],
           ),
-          // The logo
-          Container(
-            width: MediaQuery.of(context).size.width, // Fixed width for the logo
-            height: MediaQuery.of(context).size.height * 0.5, // Fixed height for the logo
-            child: Image.asset(
-              'images/PCLogo.png', // Path to your background image
-              fit: BoxFit.scaleDown,
-            ),
-          ),
-          // Circle on top of everything
-          Positioned(
-            top: -300,
-            left: -350,
-            child: CustomPaint(
-              size: Size(_expandAnimation.value, _expandAnimation.value),
-              painter: CirclePainter(_drawAnimation.value),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
