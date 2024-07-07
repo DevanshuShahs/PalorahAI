@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           fontFamily: 'Poppins'),
       navigatorKey: navigatorKey,
-      initialRoute: "/home",
+      initialRoute: "/login",
       routes: {
         "/signUp": (context) => SignUpPage(),
         "/login": (context) => LoginPage(),

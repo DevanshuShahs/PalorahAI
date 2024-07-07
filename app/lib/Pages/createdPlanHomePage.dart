@@ -63,34 +63,34 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [ 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 30,
                     backgroundImage: AssetImage('images/PCLogo.png'),
                   ),
-                  SizedBox(width: 15),
+                  const SizedBox(width: 15),
                   FutureBuilder<String>(
                     future: fetchUserName(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Hello again!',
                               style: TextStyle(fontSize: 16, color: Colors.grey),
                             ),
                             Text(
                               snapshot.data ?? 'Guest',
-                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                             ),
-                            Text(
+                            const Text(
                               'FINANCIAL BEGINNER',
                               style: TextStyle(fontSize: 12, color: Colors.grey),
                             ),
@@ -102,24 +102,24 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage>
                 ],
               ),
               
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   // Add functionality for viewing plan
                 },
-                child: Text('View plan', style: TextStyle(fontSize: 18)),
+                child: const Text('View plan', style: TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
+                  minimumSize: const Size(double.infinity, 50),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   // Add functionality for creating new plan
                 },
-                child: Text('Create new plan', style: TextStyle(fontSize: 18)),
+                child: const Text('Create new plan', style: TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
+                  minimumSize: const Size(double.infinity, 50),
                 ),
               ),
             ],
@@ -138,7 +138,7 @@ class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Color(0xFFbc9c22)
+      ..color = const Color(0xFFbc9c22)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5.0;
 

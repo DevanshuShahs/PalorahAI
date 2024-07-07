@@ -12,7 +12,6 @@ class homePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: ChangeNotifierProvider(
         create: (_) => UserPlanProvider(),
         child: Consumer<UserPlanProvider>(
