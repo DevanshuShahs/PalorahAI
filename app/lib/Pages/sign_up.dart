@@ -1,20 +1,18 @@
-
+import 'package:flutter/material.dart';
 import 'package:app/Pages/home_page.dart';
+import 'package:app/Pages/login_page.dart';
 import 'package:app/Services/authentication.dart';
 import 'package:app/Components/button.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import '../Components/text_field.dart';
-class signUpPage extends StatefulWidget{
-  
-  @override
-  State<StatefulWidget> createState() {
-    return _signUpState();
-  }
+import 'package:app/Components/text_field.dart';
 
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({Key? key}) : super(key: key);
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _signUpState extends State<signUpPage>{
+class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -22,21 +20,27 @@ class _signUpState extends State<signUpPage>{
 
   @override
   void dispose() {
-    super.dispose();
+    nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
-    nameController.dispose();
+    super.dispose();
   }
 
   void signupUser() async {
+    setState(() {
+      isLoading = true;
+    });
 
-     String email = emailController.text;
+    String email = emailController.text;
     String password = passwordController.text;
 
     if (!email.endsWith('@gmail.com')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Email must be a Gmail address.')),
       );
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
 
@@ -44,143 +48,175 @@ class _signUpState extends State<signUpPage>{
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password must be at least 6 characters long.')),
       );
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
-    // set is loading to true.
-    setState(() {
-      isLoading = true;
-    });
-    // signup user using our authmethod
+
     String res = await AuthMethod().signupUser(
-        email: emailController.text,
-        password: passwordController.text,
-        name: nameController.text);
-    // if string return is success, user has been creaded and navigate to next screen other witse show error.
+      email: email,
+      password: password,
+      name: nameController.text,
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+
     if (res == "success") {
-      setState(() {
-        isLoading = false;
-      });
-      //navigate to the next screen
-       Navigator.push(
-              context,
-              CupertinoPageRoute(builder: (context) => homePage()));
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => homePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      );
     } else {
-      setState(() {
-        isLoading = false;
-      });
-    
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign up failed. Please try again.')),
+      );
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
+    final Color primaryGreen = Theme.of(context).primaryColor;
+
     return Scaffold(
       appBar: AppBar(
-        title:
-         const Text(
-          "Sign Up",
-          ),
-         ),
-         body: SafeArea(
-          child: _buildUI(),
-          ),
-       );
-      }
-
-
-      Widget _buildUI(){
-        return SizedBox(
-          width: MediaQuery.sizeOf(context).width,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _title(),
-              _signUpForm(),
-            ],
-          ),
-        );
-      }
-
-      Widget _title(){
-        return const Text(
-          "PalorahAI",
-          style: TextStyle(
-            fontSize:35,
-            fontWeight: FontWeight.w200,
-          ),
-          );
-      }
-
-      Widget _signUpForm() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * .90,
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Form(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextFieldInput(
-                icon: Icons.person,
-                textEditingController: nameController,
-                hintText: 'Enter your name',
-                textInputType: TextInputType.text),
-            TextFieldInput(
-                icon: Icons.email,
-                textEditingController: emailController,
-                hintText: 'Enter your email',
-                textInputType: TextInputType.text),
-            TextFieldInput(
-              icon: Icons.lock,
-              textEditingController: passwordController,
-              hintText: 'Enter your password',
-              textInputType: TextInputType.text,
-              isPass: true,
-            ),
-                MyButtons(
-                onTap: signupUser,
-                text: "Sign Up"
-                 )
-
-              ],
-            ),
-          ),
-          _logInOption(),
-        ],
+        title: const Text('Sign Up'),
+      ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "PalorahAI",
+                                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: primaryGreen,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                "Create your account",
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextFieldInput(
+                                icon: Icons.person,
+                                textEditingController: nameController,
+                                hintText: "Enter organization's name",
+                                textInputType: TextInputType.text,
+                                fillColor: primaryGreen.withOpacity(0.1),
+                                iconColor: primaryGreen,
+                              ),
+                              const SizedBox(height: 16),
+                              TextFieldInput(
+                                icon: Icons.email,
+                                textEditingController: emailController,
+                                hintText: 'Enter your email',
+                                textInputType: TextInputType.emailAddress,
+                                fillColor: primaryGreen.withOpacity(0.1),
+                                iconColor: primaryGreen,
+                              ),
+                              const SizedBox(height: 16),
+                              TextFieldInput(
+                                icon: Icons.lock,
+                                textEditingController: passwordController,
+                                hintText: 'Enter your password',
+                                textInputType: TextInputType.text,
+                                isPass: true,
+                                fillColor: primaryGreen.withOpacity(0.1),
+                                iconColor: primaryGreen,
+                              ),
+                              const SizedBox(height: 24),
+                              MyButtons(
+                                onTap: signupUser,
+                                text: isLoading ? "Signing up..." : "Sign Up",
+                                backgroundColor: primaryGreen,
+                                textColor: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              _loginOption(primaryGreen),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: signupUser,
+        child: const Icon(Icons.person_add),
+        backgroundColor: primaryGreen,
       ),
     );
   }
 
-  Widget _signUpButton() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * .60,
-      child: ElevatedButton(
-        onPressed: () {
-          signupUser();
-        },
-        child: const Text("Sign up"),
-      ),
-    );
-  }
-
-  Widget _logInOption() {
+  Widget _loginOption(Color primaryGreen) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Already have an account?"),
+        Text(
+          "Been here before?",
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 22),
+        ),
         TextButton(
           onPressed: () {
-            Navigator.pushNamed(context, "/login");
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            );
           },
-          child: const Text("Log in"),
+          child: Text(
+            "Log in",
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: primaryGreen,
+              fontWeight: FontWeight.bold,
+              fontSize: 25,
+            ),
+          ),
         ),
       ],
     );

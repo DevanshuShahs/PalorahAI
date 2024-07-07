@@ -1,11 +1,14 @@
-
 import 'package:flutter/material.dart';
 
 class MyButtons extends StatelessWidget {
   final VoidCallback onTap;
   final String text;
+  final Color backgroundColor;
+  final Color textColor;
   const MyButtons({
     super.key,
+    this.backgroundColor = Colors.green,
+    this.textColor = Colors.black,
     required this.onTap,
     required this.text,
   });
@@ -19,18 +22,18 @@ class MyButtons extends StatelessWidget {
         child: Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: const ShapeDecoration(
-              shape: RoundedRectangleBorder(
+          decoration: ShapeDecoration(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(30),
                 ),
               ),
-              color: Colors.blue),
+              color: backgroundColor),
           child: Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
-              color: Colors.white,
+              color: textColor,
               fontWeight: FontWeight.bold,
             ),
           ),

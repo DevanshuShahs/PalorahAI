@@ -26,18 +26,18 @@ class MyApp extends StatelessWidget {
       title: 'Custom Fonts',
       // Set Raleway as the default app font.
       theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFD0DACC)),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Color(0xFFd0dacc), ),
           useMaterial3: true,
           fontFamily: 'Poppins'),
       navigatorKey: navigatorKey,
-      initialRoute: "/login",
+      initialRoute: "/home",
       routes: {
-        "/signUp": (context) => signUpPage(),
-        "/login": (context) => loginPage(),
+        "/signUp": (context) => SignUpPage(),
+        "/login": (context) => LoginPage(),
         "/home": (context) => homePage(),
         "/Question1": (context) => QuestionOne(),
       },
     );
   }
 }
-

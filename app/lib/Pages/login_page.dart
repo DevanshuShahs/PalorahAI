@@ -1,157 +1,192 @@
-
+import 'package:flutter/material.dart';
 import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/sign_up.dart';
 import 'package:app/Services/authentication.dart';
 import 'package:app/Components/button.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import '../Components/text_field.dart';
+import 'package:app/Components/text_field.dart';
 
-class loginPage extends StatefulWidget{
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() {
-    return _loginPageState();
-  }
-
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _loginPageState extends State<loginPage>{
-
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
 
-void loginUser() async {
+  void loginUser() async {
     setState(() {
       isLoading = true;
     });
-    // signup user using our authmethod
     String res = await AuthMethod().loginUser(
-        email: emailController.text, password: passwordController.text);
+      email: emailController.text,
+      password: passwordController.text,
+    );
 
     if (res == "success") {
       setState(() {
         isLoading = false;
       });
-      //navigate to the home screen
-      Navigator.pushNamed(context, "/home");
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => homePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      );
     } else {
       setState(() {
         isLoading = false;
       });
-      // show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Email or password is incorrect.')),
       );
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
+    final Color primaryGreen = Theme.of(context).primaryColor;
+
     return Scaffold(
       appBar: AppBar(
-        title:
-         Text(
-          "Login",
-          ),
-         ),
-         body: SafeArea(
-          child: _buildUI(),
-          ),
-       );
-      }
-
-
-      Widget _buildUI(){
-        return SizedBox(
-          width: MediaQuery.sizeOf(context).width,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _title(),
-              _loginForm(),
-            ],
-          ),
-        );
-      }
-
-      Widget _title(){
-        return const Text(
-          "PalorahAI",
-          style: TextStyle(
-            fontSize:35,
-            fontWeight: FontWeight.w200,
-          ),
-          );
-      }
-
-      Widget _loginForm() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * .90,
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Form(
-            
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextFieldInput(
-                icon: Icons.person,
-                textEditingController: emailController,
-                hintText: 'Enter your email',
-                textInputType: TextInputType.text),
-            TextFieldInput(
-              icon: Icons.lock,
-              textEditingController: passwordController,
-              hintText: 'Enter your passord',
-              textInputType: TextInputType.text,
-              isPass: true,
-            ),
-                MyButtons(onTap: loginUser, text: "Log In"),
-              ],
-            ),
-          ),
-          _signUpOption(),
-        ],
+        title: const Text('Login'),
+      ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "PalorahAI",
+                                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: primaryGreen,
+                                  fontSize: 45
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Welcome back",
+                                    style: Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextFieldInput(
+                                icon: Icons.email,
+                                textEditingController: emailController,
+                                hintText: 'Enter your email',
+                                textInputType: TextInputType.emailAddress,
+                                fillColor: primaryGreen.withOpacity(0.1),
+                                iconColor: primaryGreen,
+                              ),
+                              const SizedBox(height: 16),
+                              TextFieldInput(
+                                icon: Icons.lock,
+                                textEditingController: passwordController,
+                                hintText: 'Enter your password',
+                                textInputType: TextInputType.text,
+                                isPass: true,
+                                fillColor: primaryGreen.withOpacity(0.1),
+                                iconColor: primaryGreen,
+                              ),
+                              const SizedBox(height: 24),
+                              MyButtons(
+                                onTap: loginUser,
+                                text: isLoading ? "Logging in..." : "Log In",
+                                backgroundColor: primaryGreen,
+                                textColor: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              _signUpOption(primaryGreen),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        
+        onPressed: loginUser,
+        child: const Icon(Icons.login),
+        backgroundColor: primaryGreen,
       ),
     );
   }
 
-  Widget _loginButton() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * .60,
-      child: ElevatedButton(
-        onPressed: () {
-           Navigator.push(
-              context,
-              CupertinoPageRoute(builder: (context) => homePage()));
-        },
-        child: const Text("Login"),
-      ),
-    );
-  }
-
-  Widget _signUpOption() {
+  Widget _signUpOption(Color primaryGreen) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Don't have an account?"),
+        Text(
+          "First time?",
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 22,),
+        ),
         TextButton(
           onPressed: () {
-             Navigator.push(
+            Navigator.push(
               context,
-              CupertinoPageRoute(builder: (context) => signUpPage()));
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    SignUpPage(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            );
           },
-          child: const Text("Sign up"),
+          child: Text(
+            "Sign up",
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: primaryGreen,
+              fontWeight: FontWeight.bold,
+              fontSize: 25,
+            ),
+          ),
         ),
       ],
     );
