@@ -1,6 +1,7 @@
 import 'package:app/Pages/userPlan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shimmer/shimmer.dart';
 import '../Services/authentication.dart';
 
 class CreatedPlanHomePage extends StatefulWidget {
@@ -10,49 +11,7 @@ class CreatedPlanHomePage extends StatefulWidget {
   State<CreatedPlanHomePage> createState() => _CreatedPlanHomePageState();
 }
 
-class _CreatedPlanHomePageState extends State<CreatedPlanHomePage>
-    with TickerProviderStateMixin {
-  late AnimationController _expandController;
-  late AnimationController _drawController;
-  late Animation<double> _expandAnimation;
-  late Animation<double> _drawAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _expandController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
-      vsync: this,
-    );
-    _drawController = AnimationController(
-      duration: const Duration(milliseconds: 1300),
-      vsync: this,
-    );
-
-    _expandAnimation = Tween<double>(begin: 730.0, end: 770.0).animate(_expandController)
-      ..addListener(() {
-        setState(() {}); // Trigger rebuild with animation changes
-      });
-
-    _drawAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_drawController)
-      ..addListener(() {
-        setState(() {}); // Trigger rebuild with animation changes
-      });
-
-    _drawController.forward(); // Start the expanding animation
-
-    // Delay the start of the drawing animation
-    Future.delayed(const Duration(milliseconds: 10), () {
-      _expandController.forward();
-    });
-  }
-
-  @override
-  void dispose() {
-    _expandController.dispose();
-    _drawController.dispose();
-    super.dispose();
-  }
+class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +21,7 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage>
           padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [ 
+            children: [
               const SizedBox(height: 20),
               Row(
                 children: [
@@ -75,7 +34,7 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage>
                     future: fetchUserName(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
+                        return buildLoadingScreen();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
@@ -101,7 +60,6 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage>
                   ),
                 ],
               ),
-              
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
@@ -128,35 +86,56 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage>
       ),
     );
   }
-}
 
-class CirclePainter extends CustomPainter {
-  final double progress;
-
-  CirclePainter(this.progress);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFFbc9c22)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5.0;
-
-    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
-    final startAngle = -90.0;
-    final sweepAngle = 360.0 * progress;
-
-    canvas.drawArc(
-      rect,
-      startAngle * 3.1415927 / 180,
-      sweepAngle * 3.1415927 / 180,
-      false,
-      paint,
+  Widget buildLoadingScreen() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(1, (index) => buildShimmerPlaceholder()),
+      ),
     );
   }
 
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
+  Widget buildShimmerPlaceholder() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: 20.0,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  height: 20.0,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  height: 20.0,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
