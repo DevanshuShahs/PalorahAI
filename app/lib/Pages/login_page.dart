@@ -163,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         Text(
           "First time?",
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 22,),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 25),
         ),
         TextButton(
           onPressed: () {
