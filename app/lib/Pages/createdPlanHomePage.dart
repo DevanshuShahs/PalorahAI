@@ -13,6 +13,11 @@ class CreatedPlanHomePage extends StatefulWidget {
 
 class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
 
+   Future<String> fetchUserNameWithDelay() async {
+    String userName = await fetchUserName();
+    await Future.delayed(const Duration(seconds: 1));
+    return userName;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,10 +36,10 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
                   ),
                   const SizedBox(width: 15),
                   FutureBuilder<String>(
-                    future: fetchUserName(),
+                    future: fetchUserNameWithDelay(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return buildLoadingScreen();
+                        return buildShimmerEffect();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
@@ -43,15 +48,18 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
                           children: [
                             const Text(
                               'Hello again!',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.grey),
                             ),
                             Text(
                               snapshot.data ?? 'Guest',
-                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold),
                             ),
-                            const Text(
+                            Text(
                               'FINANCIAL BEGINNER',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 12, color: Theme.of(context).primaryColor),
                             ),
                           ],
                         );
@@ -63,7 +71,17 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Add functionality for viewing plan
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const userPlan(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                    ),
+                  );
                 },
                 child: const Text('View plan', style: TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
@@ -75,7 +93,8 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
                 onPressed: () {
                   // Add functionality for creating new plan
                 },
-                child: const Text('Create new plan', style: TextStyle(fontSize: 18)),
+                child: const Text('Create new plan',
+                    style: TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
@@ -86,56 +105,39 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
       ),
     );
   }
+}
 
-  Widget buildLoadingScreen() {
+Widget buildShimmerEffect() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: List.generate(1, (index) => buildShimmerPlaceholder()),
-      ),
-    );
-  }
-
-  Widget buildShimmerPlaceholder() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 100,
-            height: 100,
+            width: 60,
+            height: 60,
             color: Colors.white,
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: 20.0,
-                  color: Colors.white,
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  height: 20.0,
-                  color: Colors.white,
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  height: 20.0,
-                  color: Colors.white,
-                ),
-              ],
-            ),
+          const SizedBox(height: 8),
+          Container(
+            width: 100,
+            height: 20,
+            color: Colors.white,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: 150,
+            height: 20,
+            color: Colors.white,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: 100,
+            height: 20,
+            color: Colors.white,
           ),
         ],
       ),
     );
   }
-}

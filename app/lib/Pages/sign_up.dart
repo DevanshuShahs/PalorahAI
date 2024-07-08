@@ -68,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
       Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => homePage(),
+          pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
