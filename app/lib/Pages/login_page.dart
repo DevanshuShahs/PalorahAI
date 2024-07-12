@@ -1,3 +1,4 @@
+import 'package:app/Pages/createdPlanHomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/sign_up.dart';
@@ -33,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
+          pageBuilder: (context, animation, secondaryAnimation) => CreatedPlanHomePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },

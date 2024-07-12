@@ -1,3 +1,4 @@
+import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/userPlan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -75,7 +76,7 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
                     context,
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
-                          const userPlan(),
+                          const UserPlan(),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         return FadeTransition(opacity: animation, child: child);
@@ -91,7 +92,17 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  // Add functionality for creating new plan
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          HomePage(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                    ),
+                  );
                 },
                 child: const Text('Create new plan',
                     style: TextStyle(fontSize: 18)),
