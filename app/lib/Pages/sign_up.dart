@@ -194,7 +194,7 @@ class _SignUpPageState extends State<SignUpPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "Been here before?",
+          "Look familiar?",
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 22),
         ),
         TextButton(
