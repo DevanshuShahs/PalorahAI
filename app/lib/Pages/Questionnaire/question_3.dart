@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'question_4.dart';
 
 class QuestionThree extends StatefulWidget {
-  final List<String> responses;
+  final Map<String, String> responses;  
 
   const QuestionThree({Key? key, required this.responses}) : super(key: key);
 
@@ -32,12 +32,12 @@ class _QuestionThreeState extends State<QuestionThree> {
   }
 
   void _updateResponses() {
-    List<String> newResponses = [...widget.responses];
+    Map<String, String> newResponses = {...widget.responses};
     if (selectedDate != null) {
-      newResponses.add(DateFormat('MM/dd/yyyy').format(selectedDate!));
+      newResponses["Organization founded on"] = (DateFormat('MM/dd/yyyy').format(selectedDate!));
     }
     if (descriptionController.text.isNotEmpty) {
-      newResponses.add(descriptionController.text);
+      newResponses["Organizational Description"] = descriptionController.text;
     }
     Navigator.push(
       context,
@@ -52,6 +52,7 @@ class _QuestionThreeState extends State<QuestionThree> {
 
   @override
   Widget build(BuildContext context) {
+        List<String> values = widget.responses.values.toList();
     return Scaffold(
       appBar: AppBar(title: Text('Non-profit Details')),
       body: SingleChildScrollView(
@@ -103,7 +104,7 @@ class _QuestionThreeState extends State<QuestionThree> {
             ),
             SizedBox(height: 24),
             Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
-            Text(widget.responses.join(', ')),
+            Text(values.join(', ')),
           ],
         ),
       ),

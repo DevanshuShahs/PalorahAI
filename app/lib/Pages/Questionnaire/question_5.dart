@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'question_6.dart';
 
 class QuestionFive extends StatefulWidget {
-  final List<String> responses;
+  final Map<String, String> responses;  
 
   const QuestionFive({Key? key, required this.responses}) : super(key: key);
 
@@ -34,9 +34,9 @@ class _QuestionFiveState extends State<QuestionFive> {
   ];
 
   void _updateResponses() {
-    List<String> newResponses = [...widget.responses];
-    if (membershipCount != null) newResponses.add(membershipCount!);
-    if (organizationStructure != null) newResponses.add(organizationStructure!);
+    Map<String, String> newResponses = {...widget.responses};
+    if (membershipCount != null) newResponses["Membership Count"] = (membershipCount!);
+    if (organizationStructure != null) newResponses["Organzational Structure"] = (organizationStructure!);
     Navigator.push(
       context,
       PageRouteBuilder(
@@ -50,6 +50,7 @@ class _QuestionFiveState extends State<QuestionFive> {
 
   @override
   Widget build(BuildContext context) {
+        List<String> values = widget.responses.values.toList();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Organization Details'),
@@ -104,7 +105,7 @@ class _QuestionFiveState extends State<QuestionFive> {
             ),
             const SizedBox(height: 24),
             Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
-            Text(widget.responses.join(', ')),
+            Text(values.join(', ')),
           ],
         ),
       ),

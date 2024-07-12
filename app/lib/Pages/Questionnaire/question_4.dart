@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'question_5.dart';
 
 class QuestionFour extends StatefulWidget {
-  final List<String> responses;
+  final Map<String, String> responses;  
 
   const QuestionFour({Key? key, required this.responses}) : super(key: key);
 
@@ -32,9 +32,9 @@ class _QuestionFourState extends State<QuestionFour> {
   ];
 
   void _updateResponses() {
-    List<String> newResponses = [...widget.responses];
-    if (financialStatus != null) newResponses.add(financialStatus!);
-    if (fundraisingExperience != null) newResponses.add(fundraisingExperience!);
+    Map<String, String> newResponses = {...widget.responses};
+    if (financialStatus != null) newResponses["Financial Status"] = (financialStatus!);
+    if (fundraisingExperience != null) newResponses["Fundraising Experience"] = (fundraisingExperience!);
     Navigator.push(
       context,
       PageRouteBuilder(
@@ -48,6 +48,7 @@ class _QuestionFourState extends State<QuestionFour> {
 
   @override
   Widget build(BuildContext context) {
+        List<String> values = widget.responses.values.toList();
     return Scaffold(
       appBar: AppBar(title: Text('Financial Status')),
       body: SingleChildScrollView(
@@ -94,7 +95,7 @@ class _QuestionFourState extends State<QuestionFour> {
             ),
             SizedBox(height: 24),
             Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
-            Text(widget.responses.join(', ')),
+            Text(values.join(', ')),
           ],
         ),
       ),

@@ -13,12 +13,6 @@ class CreatedPlanHomePage extends StatefulWidget {
 }
 
 class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
-
-   Future<String> fetchUserNameWithDelay() async {
-    String userName = await fetchUserName();
-    await Future.delayed(const Duration(seconds: 1));
-    return userName;
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +31,7 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
                   ),
                   const SizedBox(width: 15),
                   FutureBuilder<String>(
-                    future: fetchUserNameWithDelay(),
+                    future: fetchUserName(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return buildShimmerEffect();

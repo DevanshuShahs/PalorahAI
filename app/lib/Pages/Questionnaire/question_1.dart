@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:app/Pages/Questionnaire/question_2.dart';
 
 class QuestionOne extends StatefulWidget {
-  List<String> responses = [];
+Map<String, String> responses = {};
 
   final List<String> nonprofits = [
   "Education",
@@ -343,8 +343,10 @@ class _QuestionOneState extends State<QuestionOne> {
   }
 
   void _nextPage() {
-    List<String> newResponses = [...widget.responses, myController.text];
-    Navigator.push(
+ Map<String, String> newResponses = {
+    ...widget.responses,
+    "Organizational focus": myController.text, // Use 1 as the key for the first question
+  };    Navigator.push(
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => QuestionTwo(responses: newResponses),

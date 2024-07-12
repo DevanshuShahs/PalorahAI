@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'question_3.dart';
 
 class QuestionTwo extends StatefulWidget {
-  final List<String> responses;
+  final Map<String, String> responses;
 
   const QuestionTwo({Key? key, required this.responses}) : super(key: key);
 
@@ -21,15 +21,17 @@ class _QuestionTwoState extends State<QuestionTwo> {
   List<bool> isChecked = [false, false, false];
 
   void _updateResponses() {
-    List<String> selectedGoals = [];
+    Map<String, String> selectedGoals = {};
     for (int i = 0; i < goals.length; i++) {
-      if (isChecked[i]) selectedGoals.add(goals[i]);
+      if (isChecked[i]) {
+      selectedGoals["Organizational Goal$i"] = goals[i];
+      };
     }
     Navigator.push(
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => QuestionThree(
-          responses: [...widget.responses, ...selectedGoals],
+          responses: {...widget.responses, ...selectedGoals},
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
@@ -40,6 +42,7 @@ class _QuestionTwoState extends State<QuestionTwo> {
 
   @override
   Widget build(BuildContext context) {
+    List<String> values = widget.responses.values.toList();
     return Scaffold(
       appBar: AppBar(title: Text('Your Goals')),
       body: SingleChildScrollView(
@@ -49,7 +52,8 @@ class _QuestionTwoState extends State<QuestionTwo> {
           children: [
             QuestionnaireProgress(currentStep: 2, totalSteps: 6),
             SizedBox(height: 24),
-            Text('What are your goals?', style: Theme.of(context).textTheme.titleLarge),
+            Text('What are your goals?',
+                style: Theme.of(context).textTheme.titleLarge),
             SizedBox(height: 16),
             ...List.generate(goals.length, (index) {
               return CheckboxListTile(
@@ -60,12 +64,15 @@ class _QuestionTwoState extends State<QuestionTwo> {
                     isChecked[index] = value ?? false;
                   });
                 },
-                secondary: InfoTooltip(message: 'Selecting this goal will help us tailor our recommendations.'),
+                secondary: InfoTooltip(
+                    message:
+                        'Selecting this goal will help us tailor our recommendations.'),
               );
             }),
             SizedBox(height: 24),
-            Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
-            Text(widget.responses.join(', ')),
+            Text('Other responses:',
+                style: Theme.of(context).textTheme.titleMedium),
+            Text(values.join(', ')),
           ],
         ),
       ),

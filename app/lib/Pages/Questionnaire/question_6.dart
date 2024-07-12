@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../plan.dart';
 
 class QuestionSix extends StatefulWidget {
-  final List<String> responses;
+  final Map<String, String> responses;
 
   const QuestionSix({Key? key, required this.responses}) : super(key: key);
 
@@ -49,11 +49,16 @@ class _QuestionSixState extends State<QuestionSix> {
   }
 
   void _updateResponses() {
-    List<String> newResponses = [...widget.responses, ...selectedGoals];
+    Map<String, String> goalsMap = {};
+    for (int i = 0; i < selectedGoals.length; i++) {
+      goalsMap["Financial Goal$i"] = selectedGoals[i];
+    }
+    Map<String, String> newResponses = {...widget.responses, ...goalsMap};
     Navigator.push(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => Plan(responses: newResponses),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            Plan(responses: newResponses),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
@@ -63,6 +68,7 @@ class _QuestionSixState extends State<QuestionSix> {
 
   @override
   Widget build(BuildContext context) {
+    List<String> values = widget.responses.values.toList();
     return Scaffold(
       appBar: AppBar(
         title: Text('Financial Goals'),
@@ -89,7 +95,9 @@ class _QuestionSixState extends State<QuestionSix> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  InfoTooltip(message: 'Select all that apply. These goals will help us tailor our recommendations.'),
+                  InfoTooltip(
+                      message:
+                          'Select all that apply. These goals will help us tailor our recommendations.'),
                 ],
               ),
               SizedBox(height: 16),
@@ -105,17 +113,22 @@ class _QuestionSixState extends State<QuestionSix> {
                       toggleSelection(goal);
                     },
                     selectedColor: Theme.of(context).colorScheme.secondary,
-                    backgroundColor: Theme.of(context).chipTheme.backgroundColor,
+                    backgroundColor:
+                        Theme.of(context).chipTheme.backgroundColor,
                     checkmarkColor: Theme.of(context).colorScheme.onSecondary,
                   );
                 }).toList(),
               ),
               SizedBox(height: 24),
-              Text('Selected Goals:', style: Theme.of(context).textTheme.titleMedium),
-              Text(selectedGoals.isEmpty ? 'None selected' : selectedGoals.join(", ")),
+              Text('Selected Goals:',
+                  style: Theme.of(context).textTheme.titleMedium),
+              Text(selectedGoals.isEmpty
+                  ? 'None selected'
+                  : selectedGoals.join(", ")),
               SizedBox(height: 24),
-              Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
-              Text(widget.responses.join(', ')),
+              Text('Other responses:',
+                  style: Theme.of(context).textTheme.titleMedium),
+              Text(values.join(', ')),
             ],
           ),
         ),
