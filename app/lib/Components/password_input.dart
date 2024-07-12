@@ -35,7 +35,7 @@ class _PasswordInputState extends State<PasswordInput> {
         controller: widget.textEditingController,
         decoration: InputDecoration(
           suffixIcon: IconButton(
-              icon: Icon(isPass ? Icons.visibility : Icons.visibility_off),
+              icon: Icon(isPass ? Icons.visibility : Icons.visibility_off, color: widget.iconColor,),
               onPressed: () {
                 setState(() {
                   isPass = !isPass;

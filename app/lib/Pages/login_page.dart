@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
     final Color primaryGreen = Theme.of(context).primaryColor;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Login'),
       ),

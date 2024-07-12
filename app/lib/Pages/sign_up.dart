@@ -128,7 +128,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               TextFieldInput(
-                                icon: Icons.person,
+                                icon: Icons.groups,
                                 textEditingController: nameController,
                                 hintText: "Enter organization's name",
                                 textInputType: TextInputType.text,
