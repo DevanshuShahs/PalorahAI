@@ -1,3 +1,4 @@
+import 'package:app/Components/password_input.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/login_page.dart';
@@ -144,12 +145,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                 iconColor: primaryGreen,
                               ),
                               const SizedBox(height: 16),
-                              TextFieldInput(
+                              PasswordInput(
                                 icon: Icons.lock,
                                 textEditingController: passwordController,
                                 hintText: 'Enter your password',
                                 textInputType: TextInputType.text,
-                                isPass: true,
                                 fillColor: primaryGreen.withOpacity(0.1),
                                 iconColor: primaryGreen,
                               ),

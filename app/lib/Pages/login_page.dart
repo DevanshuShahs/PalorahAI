@@ -1,3 +1,4 @@
+import 'package:app/Components/password_input.dart';
 import 'package:app/Pages/createdPlanHomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Pages/sign_up.dart';
@@ -33,7 +34,8 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const CreatedPlanHomePage(),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const CreatedPlanHomePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -76,11 +78,13 @@ class _LoginPageState extends State<LoginPage> {
                             children: [
                               Text(
                                 "PalorahAI",
-                                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: primaryGreen,
-                                  fontSize: 45
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineLarge
+                                    ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryGreen,
+                                        fontSize: 45),
                               ),
                               const SizedBox(height: 16),
                               Row(
@@ -88,10 +92,10 @@ class _LoginPageState extends State<LoginPage> {
                                 children: [
                                   Text(
                                     "Welcome back",
-                                    style: Theme.of(context).textTheme.titleLarge,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
                                   ),
                                   const SizedBox(width: 5),
-                                  
                                 ],
                               ),
                             ],
@@ -111,12 +115,11 @@ class _LoginPageState extends State<LoginPage> {
                                 iconColor: primaryGreen,
                               ),
                               const SizedBox(height: 16),
-                              TextFieldInput(
+                              PasswordInput(
                                 icon: Icons.lock,
                                 textEditingController: passwordController,
                                 hintText: 'Enter your password',
                                 textInputType: TextInputType.text,
-                                isPass: true,
                                 fillColor: primaryGreen.withOpacity(0.1),
                                 iconColor: primaryGreen,
                               ),
@@ -162,7 +165,8 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         Text(
           "First time?",
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 25),
+          style:
+              Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 25),
         ),
         TextButton(
           onPressed: () {
@@ -181,10 +185,10 @@ class _LoginPageState extends State<LoginPage> {
           child: Text(
             "Sign up",
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: primaryGreen,
-              fontWeight: FontWeight.bold,
-              fontSize: 25,
-            ),
+                  color: primaryGreen,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
           ),
         ),
       ],
