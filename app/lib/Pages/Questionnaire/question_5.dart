@@ -7,7 +7,7 @@ import 'question_6.dart';
 class QuestionFive extends StatefulWidget {
   final Map<String, String> responses;  
 
-  const QuestionFive({Key? key, required this.responses}) : super(key: key);
+  const QuestionFive({super.key, required this.responses});
 
   @override
   _QuestionFiveState createState() => _QuestionFiveState();

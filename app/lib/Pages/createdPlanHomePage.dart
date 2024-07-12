@@ -1,7 +1,6 @@
 import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/userPlan.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:shimmer/shimmer.dart';
 import '../Services/authentication.dart';
 
@@ -78,10 +77,10 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
                     ),
                   );
                 },
-                child: const Text('View plan', style: TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
+                child: const Text('View plan', style: TextStyle(fontSize: 18)),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
@@ -90,7 +89,7 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
                     context,
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
-                          HomePage(),
+                          const HomePage(),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         return FadeTransition(opacity: animation, child: child);
@@ -98,11 +97,11 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
                     ),
                   );
                 },
-                child: const Text('Create new plan',
-                    style: TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
+                child: const Text('Create new plan',
+                    style: TextStyle(fontSize: 18)),
               ),
             ],
           ),

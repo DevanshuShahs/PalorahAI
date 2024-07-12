@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AnimatedLogo extends StatefulWidget {
+  const AnimatedLogo({super.key});
+
   @override
   _AnimatedLogoState createState() => _AnimatedLogoState();
 }
@@ -31,7 +33,7 @@ class _AnimatedLogoState extends State<AnimatedLogo> with SingleTickerProviderSt
       alignment: Alignment.topCenter,
       child: ScaleTransition(
         scale: _animation,
-        child: Container(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height * 0.5,
           child: Image.asset(

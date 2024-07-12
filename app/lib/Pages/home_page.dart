@@ -10,6 +10,8 @@ import '../Components/animated_circle.dart';
 import 'createdPlanHomePage.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,8 +29,8 @@ class HomePage extends StatelessWidget {
             return Stack(
               children: [
                 _buildContent(context),
-                AnimatedLogo(),
-                AnimatedCircle(),
+                const AnimatedLogo(),
+                const AnimatedCircle(),
               ],
             );
           },

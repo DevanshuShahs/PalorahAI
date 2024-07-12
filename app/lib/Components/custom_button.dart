@@ -5,10 +5,10 @@ class CustomButton extends StatelessWidget {
   final Widget child;
   
   const CustomButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +21,13 @@ class CustomButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(32.0),
         ),
-        minimumSize: Size(250, 60),
+        minimumSize: const Size(250, 60),
       ),
       onPressed: onPressed,
       child: Padding(
         padding: const EdgeInsets.all(6.0),
         child: DefaultTextStyle(
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.w600,
           ),

@@ -14,7 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseApi().initNotifications();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -27,15 +27,15 @@ class MyApp extends StatelessWidget {
       // Set Raleway as the default app font.
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-              seedColor: Color(0xFFd0dacc), ),
+              seedColor: const Color(0xFFd0dacc), ),
           useMaterial3: true,
           fontFamily: 'Poppins'),
       navigatorKey: navigatorKey,
       initialRoute: "/login",
       routes: {
-        "/signUp": (context) => SignUpPage(),
-        "/login": (context) => LoginPage(),
-        "/home": (context) => HomePage(),
+        "/signUp": (context) => const SignUpPage(),
+        "/login": (context) => const LoginPage(),
+        "/home": (context) => const HomePage(),
         "/Question1": (context) => QuestionOne(),
       },
     );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SpringingArrow extends StatefulWidget {
+  const SpringingArrow({super.key});
+
   @override
   _SpringingArrowState createState() => _SpringingArrowState();
 }
@@ -15,7 +17,7 @@ class _SpringingArrowState extends State<SpringingArrow>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1000), // Adjust duration as needed
+      duration: const Duration(milliseconds: 1000), // Adjust duration as needed
     );
 
     _animation = Tween<double>(begin: 0, end: 50).animate(CurvedAnimation(
@@ -47,7 +49,7 @@ class _SpringingArrowState extends State<SpringingArrow>
           children: [
             Positioned(
               left: _animation.value,
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_forward,
                 size: 36,
               ),

@@ -7,7 +7,7 @@ import 'question_4.dart';
 class QuestionThree extends StatefulWidget {
   final Map<String, String> responses;  
 
-  const QuestionThree({Key? key, required this.responses}) : super(key: key);
+  const QuestionThree({super.key, required this.responses});
 
   @override
   _QuestionThreeState createState() => _QuestionThreeState();
@@ -54,55 +54,55 @@ class _QuestionThreeState extends State<QuestionThree> {
   Widget build(BuildContext context) {
         List<String> values = widget.responses.values.toList();
     return Scaffold(
-      appBar: AppBar(title: Text('Non-profit Details')),
+      appBar: AppBar(title: const Text('Non-profit Details')),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            QuestionnaireProgress(currentStep: 3, totalSteps: 6),
-            SizedBox(height: 24),
+            const QuestionnaireProgress(currentStep: 3, totalSteps: 6),
+            const SizedBox(height: 24),
             Text('When did you first establish your non-profit?', style: Theme.of(context).textTheme.titleLarge),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             InkWell(
               onTap: () => _selectDate(context),
               child: InputDecorator(
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   filled: true,
-                  fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       selectedDate == null ? 'Select Date' : DateFormat('MM/dd/yyyy').format(selectedDate!),
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
-                    Icon(Icons.calendar_today),
+                    const Icon(Icons.calendar_today),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(child: Text('Please provide a short description of your non-profit:', style: Theme.of(context).textTheme.titleLarge)),
-                InfoTooltip(message: 'This helps us understand your organization better.'),
+                const InfoTooltip(message: 'This helps us understand your organization better.'),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: descriptionController,
               maxLines: 4,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 hintText: 'Enter description here...',
                 filled: true,
-                fillColor: Theme.of(context).colorScheme.surfaceVariant,
+                fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
             Text(values.join(', ')),
           ],
@@ -110,7 +110,7 @@ class _QuestionThreeState extends State<QuestionThree> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _updateResponses,
-        child: Icon(Icons.arrow_forward),
+        child: const Icon(Icons.arrow_forward),
       ),
     );
   }

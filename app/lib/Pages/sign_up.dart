@@ -6,7 +6,7 @@ import 'package:app/Components/button.dart';
 import 'package:app/Components/text_field.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+  const SignUpPage({super.key});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -68,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
       Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
+          pageBuilder: (context, animation, secondaryAnimation) => const HomePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -76,7 +76,7 @@ class _SignUpPageState extends State<SignUpPage> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign up failed. Please try again.')),
+        const SnackBar(content: Text('Sign up failed. Please try again.')),
       );
     }
   }
@@ -183,8 +183,8 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: signupUser,
-        child: const Icon(Icons.person_add),
         backgroundColor: primaryGreen,
+        child: const Icon(Icons.person_add),
       ),
     );
   }
@@ -202,7 +202,7 @@ class _SignUpPageState extends State<SignUpPage> {
             Navigator.push(
               context,
               PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
+                pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                   return FadeTransition(opacity: animation, child: child);
                 },

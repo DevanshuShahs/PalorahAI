@@ -1,6 +1,4 @@
-import 'package:app/main.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   //prints notification to console. Can be deleted later

@@ -6,7 +6,7 @@ import '../plan.dart';
 class QuestionSix extends StatefulWidget {
   final Map<String, String> responses;
 
-  const QuestionSix({Key? key, required this.responses}) : super(key: key);
+  const QuestionSix({super.key, required this.responses});
 
   @override
   _QuestionSixState createState() => _QuestionSixState();
@@ -71,9 +71,9 @@ class _QuestionSixState extends State<QuestionSix> {
     List<String> values = widget.responses.values.toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Financial Goals'),
+        title: const Text('Financial Goals'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -81,12 +81,12 @@ class _QuestionSixState extends State<QuestionSix> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              QuestionnaireProgress(currentStep: 6, totalSteps: 6),
-              SizedBox(height: 24),
+              const QuestionnaireProgress(currentStep: 6, totalSteps: 6),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
@@ -95,19 +95,19 @@ class _QuestionSixState extends State<QuestionSix> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  InfoTooltip(
+                  const InfoTooltip(
                       message:
                           'Select all that apply. These goals will help us tailor our recommendations.'),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Wrap(
                 spacing: 8.0,
                 runSpacing: 8.0,
                 children: financialGoals.map((goal) {
                   final isSelected = selectedGoals.contains(goal);
                   return FilterChip(
-                    label: Text(goal, style: TextStyle(fontSize: 14)),
+                    label: Text(goal, style: const TextStyle(fontSize: 14)),
                     selected: isSelected,
                     onSelected: (selected) {
                       toggleSelection(goal);
@@ -119,13 +119,13 @@ class _QuestionSixState extends State<QuestionSix> {
                   );
                 }).toList(),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text('Selected Goals:',
                   style: Theme.of(context).textTheme.titleMedium),
               Text(selectedGoals.isEmpty
                   ? 'None selected'
                   : selectedGoals.join(", ")),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text('Other responses:',
                   style: Theme.of(context).textTheme.titleMedium),
               Text(values.join(', ')),
@@ -135,8 +135,8 @@ class _QuestionSixState extends State<QuestionSix> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: selectedGoals.isNotEmpty ? _updateResponses : null,
-        child: Icon(Icons.arrow_forward),
         backgroundColor: selectedGoals.isNotEmpty ? null : Colors.grey,
+        child: const Icon(Icons.arrow_forward),
       ),
     );
   }

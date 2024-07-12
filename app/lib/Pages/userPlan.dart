@@ -12,7 +12,7 @@ class PlanStep {
 }
 
 class UserPlan extends StatefulWidget {
-  const UserPlan({Key? key}) : super(key: key);
+  const UserPlan({super.key});
 
   @override
   State<UserPlan> createState() => _UserPlanState();
@@ -50,7 +50,7 @@ class _UserPlanState extends State<UserPlan> {
 
           if (planData is List) {
             setState(() {
-              planSteps = (planData as List).map((step) {
+              planSteps = (planData).map((step) {
                 if (step is Map<String, dynamic>) {
                   return PlanStep(
                     title: step['title']?.toString() ?? 'No Title',
@@ -171,8 +171,8 @@ class _UserPlanState extends State<UserPlan> {
             substep,
             style: const TextStyle(fontSize: 12),
           ),
-        )).toList(),
-        SizedBox(height: 8),
+        )),
+        const SizedBox(height: 8),
       ],
     );
   }
@@ -193,15 +193,15 @@ class _UserPlanState extends State<UserPlan> {
                 if (planSteps == null)
                   buildLoadingScreen()
                 else if (planSteps!.isEmpty)
-                  Center(
+                  const Center(
                     child: Text(
                       'No plan found for this user.',
-                      style: const TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
                   )
                 else
-                  ...planSteps!.map((step) => buildStepWithCheckbox(step)).toList(),
+                  ...planSteps!.map((step) => buildStepWithCheckbox(step)),
                 const SizedBox(height: 16),
               ],
             ),

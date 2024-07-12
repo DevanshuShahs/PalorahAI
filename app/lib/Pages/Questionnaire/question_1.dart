@@ -2,7 +2,6 @@
 
 import 'package:app/Components/info_tooltip.dart';
 import 'package:app/Components/progress_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Pages/Questionnaire/question_2.dart';
 

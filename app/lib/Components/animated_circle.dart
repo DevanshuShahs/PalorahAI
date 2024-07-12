@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class AnimatedCircle extends StatefulWidget {
+  const AnimatedCircle({super.key});
+
   @override
   _AnimatedCircleState createState() => _AnimatedCircleState();
 }
@@ -36,7 +38,7 @@ class _AnimatedCircleState extends State<AnimatedCircle> with SingleTickerProvid
         animation: _animation,
         builder: (context, child) {
           return CustomPaint(
-            size: Size(770, 770),
+            size: const Size(770, 770),
             painter: CirclePainter(_animation.value),
           );
         },
@@ -53,7 +55,7 @@ class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Color(0xFFbc9c22)
+      ..color = const Color(0xFFbc9c22)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5.0;
 

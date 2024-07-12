@@ -6,7 +6,7 @@ import 'question_3.dart';
 class QuestionTwo extends StatefulWidget {
   final Map<String, String> responses;
 
-  const QuestionTwo({Key? key, required this.responses}) : super(key: key);
+  const QuestionTwo({super.key, required this.responses});
 
   @override
   _QuestionTwoState createState() => _QuestionTwoState();
@@ -25,7 +25,7 @@ class _QuestionTwoState extends State<QuestionTwo> {
     for (int i = 0; i < goals.length; i++) {
       if (isChecked[i]) {
       selectedGoals["Organizational Goal$i"] = goals[i];
-      };
+      }
     }
     Navigator.push(
       context,
@@ -44,17 +44,17 @@ class _QuestionTwoState extends State<QuestionTwo> {
   Widget build(BuildContext context) {
     List<String> values = widget.responses.values.toList();
     return Scaffold(
-      appBar: AppBar(title: Text('Your Goals')),
+      appBar: AppBar(title: const Text('Your Goals')),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            QuestionnaireProgress(currentStep: 2, totalSteps: 6),
-            SizedBox(height: 24),
+            const QuestionnaireProgress(currentStep: 2, totalSteps: 6),
+            const SizedBox(height: 24),
             Text('What are your goals?',
                 style: Theme.of(context).textTheme.titleLarge),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ...List.generate(goals.length, (index) {
               return CheckboxListTile(
                 title: Text(goals[index]),
@@ -64,12 +64,12 @@ class _QuestionTwoState extends State<QuestionTwo> {
                     isChecked[index] = value ?? false;
                   });
                 },
-                secondary: InfoTooltip(
+                secondary: const InfoTooltip(
                     message:
                         'Selecting this goal will help us tailor our recommendations.'),
               );
             }),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Text('Other responses:',
                 style: Theme.of(context).textTheme.titleMedium),
             Text(values.join(', ')),
@@ -78,7 +78,7 @@ class _QuestionTwoState extends State<QuestionTwo> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _updateResponses,
-        child: Icon(Icons.arrow_forward),
+        child: const Icon(Icons.arrow_forward),
       ),
     );
   }

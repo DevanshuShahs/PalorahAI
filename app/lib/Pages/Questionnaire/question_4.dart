@@ -7,7 +7,7 @@ import 'question_5.dart';
 class QuestionFour extends StatefulWidget {
   final Map<String, String> responses;  
 
-  const QuestionFour({Key? key, required this.responses}) : super(key: key);
+  const QuestionFour({super.key, required this.responses});
 
   @override
   _QuestionFourState createState() => _QuestionFourState();
@@ -50,21 +50,21 @@ class _QuestionFourState extends State<QuestionFour> {
   Widget build(BuildContext context) {
         List<String> values = widget.responses.values.toList();
     return Scaffold(
-      appBar: AppBar(title: Text('Financial Status')),
+      appBar: AppBar(title: const Text('Financial Status')),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            QuestionnaireProgress(currentStep: 4, totalSteps: 6),
-            SizedBox(height: 24),
+            const QuestionnaireProgress(currentStep: 4, totalSteps: 6),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(child: Text('What is the current financial status of your organization?', style: Theme.of(context).textTheme.titleLarge)),
-                InfoTooltip(message: 'This helps us understand your financial needs.'),
+                const InfoTooltip(message: 'This helps us understand your financial needs.'),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             CustomDropdown<String>(
               value: financialStatus,
               items: financialStatusOptions,
@@ -75,14 +75,14 @@ class _QuestionFourState extends State<QuestionFour> {
                 });
               },
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(child: Text('How much experience do you have in fundraising and grant acquisition?', style: Theme.of(context).textTheme.titleLarge)),
-                InfoTooltip(message: 'This helps us tailor our recommendations to your experience level.'),
+                const InfoTooltip(message: 'This helps us tailor our recommendations to your experience level.'),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             CustomDropdown<String>(
               value: fundraisingExperience,
               items: fundraisingExperienceOptions,
@@ -93,7 +93,7 @@ class _QuestionFourState extends State<QuestionFour> {
                 });
               },
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Text('Other responses:', style: Theme.of(context).textTheme.titleMedium),
             Text(values.join(', ')),
           ],
@@ -101,7 +101,7 @@ class _QuestionFourState extends State<QuestionFour> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _updateResponses,
-        child: Icon(Icons.arrow_forward),
+        child: const Icon(Icons.arrow_forward),
       ),
     );
   }

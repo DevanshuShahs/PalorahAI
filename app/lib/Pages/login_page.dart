@@ -1,13 +1,12 @@
 import 'package:app/Pages/createdPlanHomePage.dart';
 import 'package:flutter/material.dart';
-import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/sign_up.dart';
 import 'package:app/Services/authentication.dart';
 import 'package:app/Components/button.dart';
 import 'package:app/Components/text_field.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -34,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => CreatedPlanHomePage(),
+          pageBuilder: (context, animation, secondaryAnimation) => const CreatedPlanHomePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -45,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
         isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Email or password is incorrect.')),
+        const SnackBar(content: Text('Email or password is incorrect.')),
       );
     }
   }
@@ -151,8 +150,8 @@ class _LoginPageState extends State<LoginPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: loginUser,
-        child: const Icon(Icons.login),
         backgroundColor: primaryGreen,
+        child: const Icon(Icons.login),
       ),
     );
   }
@@ -171,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
               context,
               PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
-                    SignUpPage(),
+                    const SignUpPage(),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
                   return FadeTransition(opacity: animation, child: child);

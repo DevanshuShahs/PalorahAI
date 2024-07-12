@@ -14,7 +14,7 @@ class PlanStep {
 }
 
 class Plan extends StatefulWidget {
-  Plan({super.key, required this.responses});
+  const Plan({super.key, required this.responses});
 
   final Map<String, String> responses;
 
@@ -86,7 +86,7 @@ class _PlanState extends State<Plan> {
   void fetchStory() async {
    try {
     // Combine prompt and responses
-    String combinedInput = widget.prompt + "\n\n Here are the Responses:\n";
+    String combinedInput = "${widget.prompt}\n\n Here are the Responses:\n";
     widget.responses.forEach((key, value) {
       combinedInput += "$key: $value\n";
     });
@@ -224,7 +224,7 @@ class _PlanState extends State<Plan> {
                 else
                   ...planSteps!
                       .map((step) => buildStepWithCheckbox(step))
-                      .toList(),
+                      ,
                 const SizedBox(height: 16),
               ],
             ),
@@ -267,8 +267,8 @@ class _PlanState extends State<Plan> {
                     style: const TextStyle(fontSize: 12),
                   ),
                 ))
-            .toList(),
-        SizedBox(height: 8),
+            ,
+        const SizedBox(height: 8),
       ],
     );
   }
