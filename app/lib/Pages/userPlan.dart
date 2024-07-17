@@ -2,13 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:intl/intl.dart';
 
 class PlanStep {
   final String title;
   final List<String> substeps;
   bool isCompleted;
+  DateTime? completionDate;
 
-  PlanStep({required this.title, required this.substeps, this.isCompleted = false});
+  PlanStep(
+      {required this.title,
+      required this.substeps,
+      this.isCompleted = false,
+      this.completionDate});
 }
 
 class UserPlan extends StatefulWidget {
@@ -30,70 +36,74 @@ class _UserPlanState extends State<UserPlan> {
   }
 
   Future<void> fetchUserPlan() async {
-  try {
-    User? user = auth.currentUser;
-    if (user != null) {
-      QuerySnapshot querySnapshot = await firestore
-          .collection('plans')
-          .where('userId', isEqualTo: user.uid)
-          .orderBy('timestamp', descending: true)
-          .limit(1)
-          .get();
+    try {
+      User? user = auth.currentUser;
+      if (user != null) {
+        QuerySnapshot querySnapshot = await firestore
+            .collection('plans')
+            .where('userId', isEqualTo: user.uid)
+            .orderBy('timestamp', descending: true)
+            .limit(1)
+            .get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        var docData = querySnapshot.docs.first.data() as Map<String, dynamic>;
-        print('Raw Firestore data: $docData'); // Log raw data
+        if (querySnapshot.docs.isNotEmpty) {
+          var docData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+          print('Raw Firestore data: $docData'); // Log raw data
 
-        if (docData.containsKey('plan')) {
-          var planData = docData['plan'];
-          print('Plan data type: ${planData.runtimeType}'); // Log plan data type
+          if (docData.containsKey('plan')) {
+            var planData = docData['plan'];
+            print(
+                'Plan data type: ${planData.runtimeType}'); // Log plan data type
 
-          if (planData is List) {
-            setState(() {
-              planSteps = (planData).map((step) {
-                if (step is Map<String, dynamic>) {
-                  return PlanStep(
-                    title: step['title']?.toString() ?? 'No Title',
-                    substeps: (step['substeps'] as List?)?.cast<String>() ?? [],
-                    isCompleted: step['isCompleted'] as bool? ?? false,
-                  );
-                } else {
-                  print('Unexpected step format: $step');
-                  return PlanStep(title: 'Invalid Step', substeps: []);
-                }
-              }).toList();
-            });
-          } else if (planData is String) {
-            // Handle case where plan is a single string
-            setState(() {
-              planSteps = [PlanStep(title: planData, substeps: [])];
-            });
+            if (planData is List) {
+              setState(() {
+                planSteps = (planData).map((step) {
+                  if (step is Map<String, dynamic>) {
+                    return PlanStep(
+                      title: step['title']?.toString() ?? 'No Title',
+                      substeps:
+                          (step['substeps'] as List?)?.cast<String>() ?? [],
+                      isCompleted: step['isCompleted'] as bool? ?? false,
+                    );
+                  } else {
+                    print('Unexpected step format: $step');
+                    return PlanStep(title: 'Invalid Step', substeps: []);
+                  }
+                }).toList();
+              });
+            } else if (planData is String) {
+              // Handle case where plan is a single string
+              setState(() {
+                planSteps = [PlanStep(title: planData, substeps: [])];
+              });
+            } else {
+              print('Unexpected plan data format');
+              setState(() {
+                planSteps = [
+                  PlanStep(title: 'Invalid Plan Format', substeps: [])
+                ];
+              });
+            }
           } else {
-            print('Unexpected plan data format');
+            print('No plan field found in document');
             setState(() {
-              planSteps = [PlanStep(title: 'Invalid Plan Format', substeps: [])];
+              planSteps = [];
             });
           }
         } else {
-          print('No plan field found in document');
+          print('No documents found');
           setState(() {
             planSteps = [];
           });
         }
-      } else {
-        print('No documents found');
-        setState(() {
-          planSteps = [];
-        });
       }
+    } catch (e) {
+      print('Error fetching plan: $e');
+      setState(() {
+        planSteps = [PlanStep(title: 'Error: $e', substeps: [])];
+      });
     }
-  } catch (e) {
-    print('Error fetching plan: $e');
-    setState(() {
-      planSteps = [PlanStep(title: 'Error: $e', substeps: [])];
-    });
   }
-}
 
   Widget buildLoadingScreen() {
     return Shimmer.fromColors(
@@ -153,25 +163,74 @@ class _UserPlanState extends State<UserPlan> {
               onChanged: (bool? value) {
                 setState(() {
                   step.isCompleted = value ?? false;
+                  step.completionDate =
+                      step.isCompleted ? DateTime.now() : null;
                 });
                 // Optionally update Firestore here
               },
             ),
             Expanded(
               child: Text(
-                step.title,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                step.title.replaceAll('*', ''),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  decoration: step.isCompleted
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                  color: step.isCompleted ? Colors.grey : Colors.black,
+                ),
               ),
             ),
           ],
         ),
-        ...step.substeps.map((substep) => Padding(
-          padding: const EdgeInsets.only(left: 32.0),
-          child: Text(
-            substep,
-            style: const TextStyle(fontSize: 12),
+        ...step.substeps.map((substep) {
+  String displayText = substep.trim();
+  bool isBold = displayText.startsWith('* **') && displayText.endsWith('**');
+
+  // Remove all asterisks from the text
+  displayText = displayText.replaceAll('*', '').trim();
+
+  return Padding(
+            padding: const EdgeInsets.only(left: 32.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('• ', style: TextStyle(fontSize: 12)),
+                Expanded(
+                  child: Text(
+                    displayText,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                      decoration: step.isCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                      color: step.isCompleted ? Colors.grey : Colors.black,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+        if (step.isCompleted && step.completionDate != null)
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Container(
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'Completed on: ${DateFormat('MMM dd yyyy').format(step.completionDate!)}',
+                style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer),
+              ),
+            ),
           ),
-        )),
         const SizedBox(height: 8),
       ],
     );
