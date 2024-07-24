@@ -14,8 +14,8 @@ class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
   PageController _pageController = PageController();
   List<Widget> _screens = [
-    CreatedPlanHomePage(),
-    CalendarPage(),
+    const CreatedPlanHomePage(),
+    const CalendarPage(),
     Tutorial(),
   ];
 
@@ -25,7 +25,7 @@ class _HomepageState extends State<Homepage> {
       body: PageView(
         controller: _pageController,
         children: _screens,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
@@ -46,7 +46,6 @@ class _HomepageState extends State<Homepage> {
         selectedItemColor: Theme.of(context).primaryColor,
         onTap: (int index) {
           setState(() {
-            print(index);
             _selectedIndex = index;
             _pageController.jumpToPage(index);
           });

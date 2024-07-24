@@ -1,13 +1,12 @@
+import 'package:app/Pages/Navbar/homepage.dart';
 import 'package:app/Pages/Questionnaire/question_1.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../Services/authentication.dart';
-
 import '../Components/custom_button.dart';
 import '../Components/animated_logo.dart';
 import '../Components/animated_circle.dart';
-import 'Navbar/created_plan.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -24,7 +23,7 @@ class LandingPage extends StatelessWidget {
               return buildLoadingScreen();
             }
             if (userPlanProvider.hasExistingPlan) {
-              return const CreatedPlanHomePage();
+              return const Homepage();
             }
             return Stack(
               children: [
