@@ -1,5 +1,5 @@
 import 'package:app/Components/password_input.dart';
-import 'package:app/Pages/createdPlanHomePage.dart';
+import 'package:app/Pages/Navbar/created_plan.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Pages/sign_up.dart';
 import 'package:app/Services/authentication.dart';

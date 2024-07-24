@@ -7,10 +7,10 @@ import '../Services/authentication.dart';
 import '../Components/custom_button.dart';
 import '../Components/animated_logo.dart';
 import '../Components/animated_circle.dart';
-import 'createdPlanHomePage.dart';
+import 'Navbar/created_plan.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class LandingPage extends StatelessWidget {
+  const LandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {

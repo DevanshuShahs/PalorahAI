@@ -1,6 +1,6 @@
 import 'package:app/Components/password_input.dart';
 import 'package:flutter/material.dart';
-import 'package:app/Pages/home_page.dart';
+import 'package:app/Pages/landing_page.dart';
 import 'package:app/Pages/login_page.dart';
 import 'package:app/Services/authentication.dart';
 import 'package:app/Components/button.dart';
@@ -69,7 +69,7 @@ class _SignUpPageState extends State<SignUpPage> {
       Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const HomePage(),
+          pageBuilder: (context, animation, secondaryAnimation) => const LandingPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },

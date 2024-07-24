@@ -1,12 +1,13 @@
 import 'package:app/Pages/Questionnaire/question_1.dart';
-import 'package:app/Pages/home_page.dart';
+import 'package:app/Pages/Navbar/homepage.dart';
+import 'package:app/Pages/landing_page.dart';
 import 'package:app/Pages/login_page.dart';
 import 'package:app/Pages/sign_up.dart';
 import 'package:app/notificationApi/firebase_api.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
-import 'package:app/Pages/calendar.dart';
+import 'package:app/Pages/Navbar/calendar.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "/signUp": (context) => const SignUpPage(),
         "/login": (context) => const LoginPage(),
-        "/home": (context) => const HomePage(),
+        "/home": (context) => const LandingPage(),
         "/Question1": (context) => QuestionOne(),
       },
     );
