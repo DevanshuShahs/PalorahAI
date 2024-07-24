@@ -1,3 +1,4 @@
+import 'package:app/Pages/Tutorials.dart';
 import 'package:app/Pages/home_page.dart';
 import 'package:app/Pages/userPlan.dart';
 import 'package:flutter/material.dart';
@@ -101,6 +102,27 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child: const Text('Create new plan',
+                    style: TextStyle(fontSize: 18)),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          Tutorial(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Text('Tutorials',
                     style: TextStyle(fontSize: 18)),
               ),
             ],
