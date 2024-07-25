@@ -12,6 +12,13 @@ class CreatedPlanHomePage extends StatefulWidget {
 }
 
 class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
+  // Dummy data for plans - replace with actual data fetching logic
+  final List<Map<String, String>> plans = [
+    {'name': 'Savings Plan', 'description': 'Save for your future'},
+    {'name': 'Investment Plan', 'description': 'Grow your wealth'},
+    {'name': 'Debt Reduction', 'description': 'Get out of debt faster'},
+    {'name': 'Retirement Plan', 'description': 'Secure your golden years'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -23,95 +30,174 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage('images/PCLogo.png'),
-                  ),
-                  const SizedBox(width: 15),
-                  FutureBuilder<String>(
-                    future: fetchUserName(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return buildShimmerEffect();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Hello again!',
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
-                            ),
-                            Text(
-                              snapshot.data ?? 'Guest',
-                              style: const TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              'FINANCIAL BEGINNER',
-                              style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColor),
-                            ),
-                          ],
-                        );
-                      }
-                    },
-                  ),
-                ],
+              _buildUserHeader(),
+              const SizedBox(height: 20),
+              Text(
+                "Your plans",
+                style: TextStyle(
+                  fontSize: 27,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'PlayfairDisplay',
+                ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          const UserPlan(),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        return FadeTransition(opacity: animation, child: child);
-                      },
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: const Text('View plan', style: TextStyle(fontSize: 18)),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          const LandingPage(),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        return FadeTransition(opacity: animation, child: child);
-                      },
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: const Text('Create new plan',
-                    style: TextStyle(fontSize: 18)),
+              Expanded(
+                child: _buildPlanGrid(),
               ),
             ],
           ),
         ),
       ),
-     
+      floatingActionButton: _buildCreateNewPlanButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
-  
+Widget _buildUserHeader() {
+    return Row(
+      children: [
+        const CircleAvatar(
+          radius: 30,
+          backgroundImage: AssetImage('images/PCLogo.png'),
+        ),
+        const SizedBox(width: 15),
+        FutureBuilder<String>(
+          future: fetchUserName(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return buildShimmerEffect();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Hello again!',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                  Text(
+                    snapshot.data ?? 'Guest',
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'FINANCIAL BEGINNER',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ],
+              );
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlanGrid() {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.9, // Adjust this value to change card height
+      ),
+      itemCount: plans.length,
+      itemBuilder: (context, index) {
+        return _buildPlanCard(plans[index]);
+      },
+    );
+  }
+
+  Widget _buildPlanCard(Map<String, String> plan) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const UserPlan(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.account_balance, size: 40, color: Theme.of(context).primaryColor),
+              const SizedBox(height: 8),
+              Text(
+                plan['name']!,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Expanded(
+                child: Text(
+                  plan['description']!,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.fade,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCreateNewPlanButton() {
+    return Container(
+      height: 56,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const LandingPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.add, size: 24),
+            const SizedBox(width: 8),
+            Text(
+              'Create new plan',
+              style: TextStyle(fontSize: 18),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
+
 
 Widget buildShimmerEffect() {
   return Shimmer.fromColors(
