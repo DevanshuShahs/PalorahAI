@@ -11,8 +11,7 @@ class CreatedPlanHomePage extends StatefulWidget {
   State<CreatedPlanHomePage> createState() => _CreatedPlanHomePageState();
 }
 
-class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
-  // Dummy data for plans - replace with actual data fetching logic
+class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> with AutomaticKeepAliveClientMixin {
   final List<Map<String, String>> plans = [
     {'name': 'Savings Plan', 'description': 'Save for your future'},
     {'name': 'Investment Plan', 'description': 'Grow your wealth'},
@@ -20,8 +19,20 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
     {'name': 'Retirement Plan', 'description': 'Secure your golden years'},
   ];
 
+  late Future<String> _userNameFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userNameFuture = fetchUserName();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -53,7 +64,7 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> {
     );
   }
 
-Widget _buildUserHeader() {
+  Widget _buildUserHeader() {
     return Row(
       children: [
         const CircleAvatar(
@@ -62,7 +73,7 @@ Widget _buildUserHeader() {
         ),
         const SizedBox(width: 15),
         FutureBuilder<String>(
-          future: fetchUserName(),
+          future: _userNameFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return buildShimmerEffect();
@@ -83,7 +94,7 @@ Widget _buildUserHeader() {
                   Text(
                     'FINANCIAL BEGINNER',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       color: Theme.of(context).primaryColor,
                     ),
                   ),
@@ -128,27 +139,30 @@ Widget _buildUserHeader() {
           );
         },
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(Icons.account_balance, size: 40, color: Theme.of(context).primaryColor),
-              const SizedBox(height: 8),
-              Text(
-                plan['name']!,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
               Expanded(
-                child: Text(
-                  plan['description']!,
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.fade,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      plan['name']!,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      plan['description']!,
+                      style: const TextStyle(fontSize: 15, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -196,40 +210,39 @@ Widget _buildUserHeader() {
       ),
     );
   }
-}
 
-
-Widget buildShimmerEffect() {
-  return Shimmer.fromColors(
-    baseColor: Colors.grey[300]!,
-    highlightColor: Colors.grey[100]!,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          color: Colors.white,
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: 100,
-          height: 20,
-          color: Colors.white,
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: 150,
-          height: 20,
-          color: Colors.white,
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: 100,
-          height: 20,
-          color: Colors.white,
-        ),
-      ],
-    ),
-  );
+  Widget buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            color: Colors.white,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: 100,
+            height: 20,
+            color: Colors.white,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: 150,
+            height: 20,
+            color: Colors.white,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: 100,
+            height: 20,
+            color: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
 }
