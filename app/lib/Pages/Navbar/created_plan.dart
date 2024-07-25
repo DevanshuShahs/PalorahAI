@@ -43,9 +43,9 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> with Automati
               const SizedBox(height: 20),
               _buildUserHeader(),
               const SizedBox(height: 20),
-              Text(
+              const Text(
                 "Your plans",
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 27,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'PlayfairDisplay',
@@ -196,11 +196,11 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> with Automati
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24),
         ),
-        child: Row(
+        child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.add, size: 24),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               'Create new plan',
               style: TextStyle(fontSize: 18),
