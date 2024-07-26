@@ -70,6 +70,7 @@ class _CalendarPageState extends State<CalendarPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
+      
       body: SafeArea(
         child: Column(
           children: [
@@ -150,7 +151,8 @@ class _CalendarPageState extends State<CalendarPage>
                   } else if (snapshot.hasError) {
                     return CircleAvatar(
                       backgroundColor: Theme.of(context).colorScheme.primary,
-                      child: Text('Error', style: TextStyle(color: Colors.white)),
+                      child: const Text('Error',
+                          style: TextStyle(color: Colors.white)),
                     );
                   } else {
                     String userInitial =
@@ -158,11 +160,13 @@ class _CalendarPageState extends State<CalendarPage>
                             ? snapshot.data!.substring(0, 1)
                             : 'G';
                     return CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
                       child: Text(
                         userInitial,
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -202,22 +206,19 @@ class _CalendarPageState extends State<CalendarPage>
         outsideDaysVisible: true,
         cellMargin: EdgeInsets.zero,
         cellPadding: EdgeInsets.zero,
-        defaultTextStyle: TextStyle(color: Colors.black),
-        todayTextStyle: TextStyle(color: Colors.white),
+        defaultTextStyle: const TextStyle(color: Colors.black),
+        todayTextStyle: const TextStyle(color: Colors.white),
         todayDecoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary,
           shape: BoxShape.circle,
         ),
-        selectedTextStyle: TextStyle(color: Colors.white),
+        selectedTextStyle: const TextStyle(color: Colors.white),
         selectedDecoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary,
           shape: BoxShape.circle,
         ),
-        markersMaxCount: 3,
-        markersAlignment: Alignment.bottomCenter,
-        markersOffset: const PositionedOffset(bottom: 4),
+        markerSize: 0,
       ),
-      
       calendarBuilders: CalendarBuilders(
         defaultBuilder: (context, day, focusedDay) {
           return _buildDayCell(day, focusedDay);
@@ -240,7 +241,10 @@ class _CalendarPageState extends State<CalendarPage>
         rightChevronIcon: Icon(Icons.chevron_right),
         titleTextStyle: TextStyle(fontSize: 17),
       ),
-      rowHeight: (MediaQuery.of(context).size.height * 0.75) / 6,
+      daysOfWeekHeight:
+          39.5, // Add this line to increase the height of the days of the week row
+
+      rowHeight: (MediaQuery.of(context).size.height * 0.8) / 6,
     );
   }
 
@@ -250,26 +254,38 @@ class _CalendarPageState extends State<CalendarPage>
     final isOutside = day.month != focusedDay.month;
 
     return Container(
-      width: MediaQuery.sizeOf(context).width/7,
-        decoration: BoxDecoration(
+      width: MediaQuery.of(context).size.width / 7,
+      decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[300]!, width: 0.5),
-        color: isToday
-          ?         Theme.of(context).colorScheme.primary.withOpacity(0.5)
-          : isSelected
-              ? Theme.of(context).colorScheme.primary
-              : Colors.transparent,
       ),
-      
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '${day.day}',
-            style: TextStyle(
-              color: isOutside
-                  ? Colors.grey
-                  : (isToday ? Colors.white : isSelected ? Colors.white : Colors.black),
-              fontWeight: isToday || isSelected ? FontWeight.bold : FontWeight.normal,
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Container(
+              width: 25,
+              height: 25,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isToday
+                    ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                    : isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.transparent,
+              ),
+              child: Center(
+                child: Text(
+                  '${day.day}',
+                  style: TextStyle(
+                    color: isOutside
+                        ? Colors.grey
+                        : (isToday || isSelected ? Colors.white : Colors.black),
+                    fontWeight: isToday || isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
+              ),
             ),
           ),
           ...events.map((event) => _buildEventIndicator(event)).toList(),
@@ -294,7 +310,7 @@ class _CalendarPageState extends State<CalendarPage>
     );
   }
 
-   void _showAddEventDialog() {
+  void _showAddEventDialog() {
     final _formKey = GlobalKey<FormState>();
     String _title = '';
     DateTime _date = _selectedDay ?? DateTime.now();
