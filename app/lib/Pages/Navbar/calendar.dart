@@ -72,13 +72,16 @@ class _CalendarPageState extends State<CalendarPage>
     return Scaffold(
       
       body: SafeArea(
+                child: SingleChildScrollView(
         child: Column(
           children: [
             _buildHeader(),
-            Expanded(child: _buildCalendar()),
-          ],
+ SizedBox(
+                height: MediaQuery.of(context).size.height - 100, // Adjust height as needed
+                child: _buildCalendar(),
+              ),          ],
         ),
-      ),
+      ),),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddEventDialog,
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -229,6 +232,9 @@ class _CalendarPageState extends State<CalendarPage>
         selectedBuilder: (context, day, focusedDay) {
           return _buildDayCell(day, focusedDay, isSelected: true);
         },
+        outsideBuilder: (context, day, focusedDay) {
+          return _buildDayCell(day, focusedDay);
+        },
       ),
       daysOfWeekStyle: DaysOfWeekStyle(
         weekdayStyle: TextStyle(color: Colors.grey[600]),
@@ -248,51 +254,53 @@ class _CalendarPageState extends State<CalendarPage>
     );
   }
 
-  Widget _buildDayCell(DateTime day, DateTime focusedDay,
-      {bool isToday = false, bool isSelected = false}) {
-    final events = _events[_truncateTime(day)] ?? [];
-    final isOutside = day.month != focusedDay.month;
+Widget _buildDayCell(DateTime day, DateTime focusedDay,
+    {bool isToday = false, bool isSelected = false}) {
+  final events = _events[_truncateTime(day)] ?? [];
+  final isOutside = day.month != focusedDay.month;
 
-    return Container(
-      width: MediaQuery.of(context).size.width / 7,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!, width: 0.5),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Container(
-              width: 25,
-              height: 25,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isToday
-                    ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                    : isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
-              ),
-              child: Center(
-                child: Text(
-                  '${day.day}',
-                  style: TextStyle(
-                    color: isOutside
-                        ? Colors.grey
-                        : (isToday || isSelected ? Colors.white : Colors.black),
-                    fontWeight: isToday || isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
+  return Container(
+    width: MediaQuery.of(context).size.width / 7,
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.grey[300]!, width: 0.5),
+            color: isSelected ? Colors.grey[200] : Colors.transparent, // Added background color for outside days
+
+    ),
+    child: Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Container(
+            width: 25,
+            height: 25,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isToday
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                  : isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.transparent,
+            ),
+            child: Center(
+              child: Text(
+                '${day.day}',
+                style: TextStyle(
+                  color: isOutside
+                      ? (isSelected ? Colors.white :Colors.grey)
+                      : (isSelected ? Colors.white : Colors.black),
+                  fontWeight: isSelected
+                      ? FontWeight.bold
+                      : FontWeight.normal,
                 ),
               ),
             ),
           ),
-          ...events.map((event) => _buildEventIndicator(event)).toList(),
-        ],
-      ),
-    );
-  }
+        ),
+        ...events.map((event) => _buildEventIndicator(event)).toList(),
+      ],
+    ),
+  );
+}
 
   Widget _buildEventIndicator(Event event) {
     return Container(
