@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -17,6 +19,8 @@ class _CalendarPageState extends State<CalendarPage>
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   Map<DateTime, List<Event>> _events = {};
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   late Future<String> _userNameFuture;
 
@@ -28,42 +32,8 @@ class _CalendarPageState extends State<CalendarPage>
     super.initState();
     _userNameFuture = fetchUserName();
     _selectedDay = _focusedDay;
-    _events = {
-      _truncateTime(DateTime.now().subtract(const Duration(days: 2))): [
-        Event(
-          title: "Past Meeting",
-          deadline: DateTime.now().subtract(const Duration(days: 2, hours: 3)),
-          color: Colors.grey,
-          icon: Icons.history,
-          notes: "Discussed quarterly results",
-        ),
-      ],
-      _truncateTime(DateTime.now()): [
-        Event(
-          title: "Dinner with Obama",
-          deadline: DateTime.now().add(const Duration(hours: 6)),
-          color: Colors.blue,
-          icon: Icons.dinner_dining,
-          notes: "Private dinner at the White House",
-        ),
-      ],
-      _truncateTime(DateTime.now().add(const Duration(days: 1))): [
-        Event(
-          title: "Biz trip to Italy",
-          deadline: DateTime.now().add(const Duration(days: 1, hours: 9)),
-          color: Colors.purple,
-          icon: Icons.flight,
-          notes: "Business trip for client meetings",
-        ),
-        Event(
-          title: "Government meetings",
-          deadline: DateTime.now().add(const Duration(days: 1, hours: 14)),
-          color: Colors.pink,
-          icon: Icons.meeting_room,
-          notes: "Meet with government officials",
-        ),
-      ],
-    };
+    _events = {};
+    _fetchEvents(); // Fetch events from Firestore
   }
 
   DateTime _truncateTime(DateTime dateTime) {
@@ -347,7 +317,6 @@ class _CalendarPageState extends State<CalendarPage>
                                 _showEditEventDialog(event);
                               },
                             ),
-                            
                           ],
                         ),
                       ))
@@ -416,14 +385,16 @@ class _CalendarPageState extends State<CalendarPage>
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Expanded(
-                              flex: 1,
-                              child: const Icon(Icons.calendar_month_rounded)),
+                            flex: 1,
+                            child: const Icon(Icons.calendar_month_rounded),
+                          ),
                           Expanded(
                             flex: 2,
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Color(0xFFd0dacc).withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(10)),
+                                color: Color(0xFFd0dacc).withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                               child: TextButton(
                                 onPressed: () async {
                                   final DateTime? picked = await showDatePicker(
@@ -447,7 +418,9 @@ class _CalendarPageState extends State<CalendarPage>
                                 child: Text(
                                   DateFormat('MMM d, yyyy').format(_date),
                                   style: TextStyle(
-                                      fontSize: 17, color: Color(0xFFe9837e)),
+                                    fontSize: 17,
+                                    color: Color(0xFFe9837e),
+                                  ),
                                 ),
                               ),
                             ),
@@ -528,34 +501,40 @@ class _CalendarPageState extends State<CalendarPage>
               ),
               actions: [
                 Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          _deleteEvent(event);
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      ElevatedButton(
-                        child: const Text('Save'),
-                        onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      final updatedEvent = Event(
-                        title: _title,
-                        deadline: _date,
-                        color: _selectedColor,
-                        icon: _selectedIcon,
-                        notes: _notes,
-                      );
-                      _updateEvent(event, updatedEvent);
-                      Navigator.of(context).pop();
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        _deleteEventFromFirestore(event);
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ElevatedButton(
+                      child: const Text('Save'),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          final User? user = _auth.currentUser;
+                          if (user != null) {
+                            final updatedEvent = Event(
+                              userId: user.uid,
 
+                              id: event.id, // Ensure the ID is passed correctly
+                              title: _title,
+                              deadline: _date,
+                              color: _selectedColor,
+                              icon: _selectedIcon,
+                              notes: _notes,
+                            );
+                            _updateEventInFirestore(event, updatedEvent);
+                            Navigator.of(context).pop();
                           }
-                        },
-                      ),
-                    ])
+                        }
+                      },
+                    ),
+                  ],
+                )
               ],
             );
           },
@@ -563,26 +542,30 @@ class _CalendarPageState extends State<CalendarPage>
       },
     );
   }
-void _updateEvent(Event oldEvent, Event updatedEvent) {
-    setState(() {
-      final oldEventDate = _truncateTime(oldEvent.deadline);
-      final updatedEventDate = _truncateTime(updatedEvent.deadline);
 
+  void _updateEvent(Event oldEvent, Event updatedEvent) {
+    setState(() {
       // Remove the old event
-      _events[oldEventDate]!.remove(oldEvent);
-      if (_events[oldEventDate]!.isEmpty) {
+      final oldEventDate = _truncateTime(oldEvent.deadline);
+      _events[oldEventDate]?.removeWhere((event) => event.id == oldEvent.id);
+      if (_events[oldEventDate]?.isEmpty ?? false) {
         _events.remove(oldEventDate);
       }
 
       // Add the updated event
-      if (_events.containsKey(updatedEventDate)) {
-        _events[updatedEventDate]!.add(updatedEvent);
-      } else {
-        _events[updatedEventDate] = [updatedEvent];
+      final updatedEventDate = _truncateTime(updatedEvent.deadline);
+      if (!_events.containsKey(updatedEventDate)) {
+        _events[updatedEventDate] = [];
       }
+      _events[updatedEventDate]!.add(updatedEvent);
 
+      // Update selected and focused day
       _selectedDay = updatedEventDate;
       _focusedDay = updatedEventDate;
+
+      // Sort events for the updated date
+      _events[updatedEventDate]!
+          .sort((a, b) => a.deadline.compareTo(b.deadline));
     });
   }
 
@@ -598,6 +581,84 @@ void _updateEvent(Event oldEvent, Event updatedEvent) {
         _selectedDay = _focusedDay;
       }
     });
+    _deleteEventFromFirestore(event);
+  }
+
+  Future<void> _fetchEvents() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final querySnapshot = await _firestore
+          .collection('events')
+          .where('userId', isEqualTo: user.uid)
+          .get();
+      final events = querySnapshot.docs
+          .map((doc) => Event.fromMap(doc.data(), doc.id))
+          .toList();
+      setState(() {
+        _events = groupEventsByDate(events);
+      });
+    } else {
+      // Handle the case where no user is signed in
+      setState(() {
+        _events = {};
+      });
+    }
+  }
+
+  Map<DateTime, List<Event>> groupEventsByDate(List<Event> events) {
+    return events.fold<Map<DateTime, List<Event>>>({}, (map, event) {
+      final date = DateTime(
+          event.deadline.year, event.deadline.month, event.deadline.day);
+      if (!map.containsKey(date)) {
+        map[date] = [];
+      }
+      map[date]!.add(event);
+      return map;
+    });
+  }
+
+  // Add an event to Firestore
+  Future<void> _addEventToFirestore(Event event) async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final eventMap = event.toMap();
+      eventMap['userId'] = user.uid;
+      final docRef = await _firestore.collection('events').add(eventMap);
+      event.id = docRef.id;
+      _addEvent(event);
+    } else {
+      // Handle the case where no user is signed in
+      print('No user signed in');
+    }
+  }
+
+  // Update an event in Firestore
+  Future<void> _updateEventInFirestore(
+      Event oldEvent, Event updatedEvent) async {
+    final User? user = _auth.currentUser;
+    if (user != null && oldEvent.userId == user.uid) {
+      try {
+        await _firestore
+            .collection('events')
+            .doc(updatedEvent.id)
+            .update(updatedEvent.toMap());
+        _updateEvent(oldEvent, updatedEvent);
+      } catch (e) {
+        print('Error updating event in Firestore: $e');
+      }
+    } else {
+      print('User not authorized to update this event');
+    }
+  }
+
+  Future<void> _deleteEventFromFirestore(Event event) async {
+    final User? user = _auth.currentUser;
+    if (user != null && event.userId == user.uid) {
+      await _firestore.collection('events').doc(event.id).delete();
+      _deleteEvent(event);
+    } else {
+      print('User not authorized to delete this event');
+    }
   }
 
   Widget _buildEventIndicator(Event event) {
@@ -782,20 +843,26 @@ void _updateEvent(Event oldEvent, Event updatedEvent) {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
-                      final newEvent = Event(
-                        title: _title,
-                        deadline: DateTime(
-                          _date.year,
-                          _date.month,
-                          _date.day,
-                        ),
-                        color: _selectedColor,
-                        icon: _selectedIcon,
-                        notes: _notes,
-                      );
-                      _addEvent(
-                          newEvent); // Use the new method to add the event
-                      Navigator.of(context).pop();
+                      final User? user = _auth.currentUser;
+                      if (user != null) {
+                        final newEvent = Event(
+                          userId: user.uid,
+                          title: _title,
+                          deadline: DateTime(
+                            _date.year,
+                            _date.month,
+                            _date.day,
+                          ),
+                          color: _selectedColor,
+                          icon: _selectedIcon,
+                          notes: _notes,
+                        );
+                        _addEventToFirestore(newEvent);
+                        Navigator.of(context).pop();
+                      } else {
+                        // Handle the case where no user is signed in
+                        print('No user signed in');
+                      }
                     }
                   },
                 ),
@@ -906,16 +973,44 @@ Widget buildShimmerEffect() {
 }
 
 class Event {
+  String? id; // Firestore document ID
+  final String userId;
   final String title;
   final DateTime deadline;
   final Color color;
   final IconData icon;
   final String notes;
 
-  Event(
-      {required this.title,
-      required this.deadline,
-      required this.color,
-      required this.icon,
-      this.notes = 'No notes'});
+  Event({
+    this.id,
+    required this.userId,
+    required this.title,
+    required this.deadline,
+    required this.color,
+    required this.icon,
+    this.notes = 'No notes',
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'userId': userId,
+      'title': title,
+      'deadline': deadline.toIso8601String(),
+      'color': color.value,
+      'icon': icon.codePoint,
+      'notes': notes,
+    };
+  }
+
+  factory Event.fromMap(Map<String, dynamic> map, String id) {
+    return Event(
+      id: id,
+      userId: map['userId'],
+      title: map['title'],
+      deadline: DateTime.parse(map['deadline']),
+      color: Color(map['color']),
+      icon: IconData(map['icon'], fontFamily: 'MaterialIcons'),
+      notes: map['notes'],
+    );
+  }
 }
