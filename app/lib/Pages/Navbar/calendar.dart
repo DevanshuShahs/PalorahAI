@@ -35,6 +35,7 @@ class _CalendarPageState extends State<CalendarPage>
           deadline: DateTime.now().subtract(const Duration(days: 2, hours: 3)),
           color: Colors.grey,
           icon: Icons.history,
+          notes: "Discussed quarterly results",
         ),
       ],
       _truncateTime(DateTime.now()): [
@@ -43,6 +44,7 @@ class _CalendarPageState extends State<CalendarPage>
           deadline: DateTime.now().add(const Duration(hours: 6)),
           color: Colors.blue,
           icon: Icons.dinner_dining,
+          notes: "Private dinner at the White House",
         ),
       ],
       _truncateTime(DateTime.now().add(const Duration(days: 1))): [
@@ -51,12 +53,14 @@ class _CalendarPageState extends State<CalendarPage>
           deadline: DateTime.now().add(const Duration(days: 1, hours: 9)),
           color: Colors.purple,
           icon: Icons.flight,
+          notes: "Business trip for client meetings",
         ),
         Event(
           title: "Government meetings",
           deadline: DateTime.now().add(const Duration(days: 1, hours: 14)),
           color: Colors.pink,
           icon: Icons.meeting_room,
+          notes: "Meet with government officials",
         ),
       ],
     };
@@ -70,18 +74,20 @@ class _CalendarPageState extends State<CalendarPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      
       body: SafeArea(
-                child: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(),
- SizedBox(
-                height: MediaQuery.of(context).size.height - 100, // Adjust height as needed
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeader(),
+              SizedBox(
+                height: MediaQuery.of(context).size.height -
+                    100, // Adjust height as needed
                 child: _buildCalendar(),
-              ),          ],
+              ),
+            ],
+          ),
         ),
-      ),),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddEventDialog,
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -192,12 +198,10 @@ class _CalendarPageState extends State<CalendarPage>
       calendarFormat: _calendarFormat,
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
       onDaySelected: (selectedDay, focusedDay) {
-        if (!isSameDay(_selectedDay, selectedDay)) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-        }
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+        });
       },
       onPageChanged: (focusedDay) {
         setState(() {
@@ -254,53 +258,347 @@ class _CalendarPageState extends State<CalendarPage>
     );
   }
 
-Widget _buildDayCell(DateTime day, DateTime focusedDay,
-    {bool isToday = false, bool isSelected = false}) {
-  final events = _events[_truncateTime(day)] ?? [];
-  final isOutside = day.month != focusedDay.month;
+  Widget _buildDayCell(DateTime day, DateTime focusedDay,
+      {bool isToday = false, bool isSelected = false}) {
+    final events = _events[_truncateTime(day)] ?? [];
+    final isOutside = day.month != focusedDay.month;
 
-  return Container(
-    width: MediaQuery.of(context).size.width / 7,
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.grey[300]!, width: 0.5),
-            color: isSelected ? Colors.grey[200] : Colors.transparent, // Added background color for outside days
-
-    ),
-    child: Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Container(
-            width: 25,
-            height: 25,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isToday
-                  ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                  : isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.transparent,
-            ),
-            child: Center(
-              child: Text(
-                '${day.day}',
-                style: TextStyle(
-                  color: isOutside
-                      ? (isSelected ? Colors.white :Colors.grey)
-                      : (isSelected ? Colors.white : Colors.black),
-                  fontWeight: isSelected
-                      ? FontWeight.bold
-                      : FontWeight.normal,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedDay = day;
+          _focusedDay = day;
+        });
+        if (events.isNotEmpty) {
+          _showEventListDialog(events);
+        }
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width / 7,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[300]!, width: 0.5),
+          color: isSelected ? Colors.grey[200] : Colors.transparent,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Container(
+                width: 25,
+                height: 25,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isToday
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                      : isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.transparent,
+                ),
+                child: Center(
+                  child: Text(
+                    '${day.day}',
+                    style: TextStyle(
+                      color: isOutside
+                          ? (isSelected ? Colors.white : Colors.grey)
+                          : (isSelected ? Colors.white : Colors.black),
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
+            ...events.map((event) => _buildEventIndicator(event)).toList(),
+          ],
         ),
-        ...events.map((event) => _buildEventIndicator(event)).toList(),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
+
+  void _showEventListDialog(List<Event> events) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+              'Events for ${DateFormat('MMM d, yyyy').format(_selectedDay!)}'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: events
+                  .map((event) => ListTile(
+                        leading: Icon(event.icon, color: event.color),
+                        title: Text(event.title),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Notes: ${event.notes}',
+                            ),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit,
+                                  color: Theme.of(context).colorScheme.primary),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                _showEditEventDialog(event);
+                              },
+                            ),
+                            
+                          ],
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showEditEventDialog(Event event) {
+    final _formKey = GlobalKey<FormState>();
+    String _title = event.title;
+    DateTime _date = event.deadline;
+    Color _selectedColor = event.color;
+    IconData _selectedIcon = event.icon;
+    String _notes = event.notes;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Edit Event'),
+              content: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        initialValue: _title,
+                        decoration: const InputDecoration(
+                            labelText: 'Event Title (Required)'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter an event title';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _title = value!;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        initialValue: _notes,
+                        decoration: const InputDecoration(
+                            labelText: 'Notes (Optional)'),
+                        onSaved: (value) {
+                          _notes = value ?? 'None';
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                              flex: 1,
+                              child: const Icon(Icons.calendar_month_rounded)),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Color(0xFFd0dacc).withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: TextButton(
+                                onPressed: () async {
+                                  final DateTime? picked = await showDatePicker(
+                                    context: context,
+                                    initialDate: _date,
+                                    firstDate: DateTime(2020),
+                                    lastDate: DateTime(2101),
+                                  );
+                                  if (picked != null && picked != _date) {
+                                    setState(() {
+                                      _date = DateTime(
+                                        picked.year,
+                                        picked.month,
+                                        picked.day,
+                                        _date.hour,
+                                        _date.minute,
+                                      );
+                                    });
+                                  }
+                                },
+                                child: Text(
+                                  DateFormat('MMM d, yyyy').format(_date),
+                                  style: TextStyle(
+                                      fontSize: 17, color: Color(0xFFe9837e)),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildColorButton(Colors.blue, _selectedColor,
+                              (color) {
+                            setState(() {
+                              _selectedColor = color;
+                            });
+                          }),
+                          _buildColorButton(Colors.green, _selectedColor,
+                              (color) {
+                            setState(() {
+                              _selectedColor = color;
+                            });
+                          }),
+                          _buildColorButton(Colors.red, _selectedColor,
+                              (color) {
+                            setState(() {
+                              _selectedColor = color;
+                            });
+                          }),
+                          _buildColorButton(Colors.purple, _selectedColor,
+                              (color) {
+                            setState(() {
+                              _selectedColor = color;
+                            });
+                          }),
+                          _buildColorButton(Colors.orange, _selectedColor,
+                              (color) {
+                            setState(() {
+                              _selectedColor = color;
+                            });
+                          }),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildIconButton(Icons.event, _selectedIcon, (icon) {
+                            setState(() {
+                              _selectedIcon = icon;
+                            });
+                          }),
+                          _buildIconButton(Icons.work, _selectedIcon, (icon) {
+                            setState(() {
+                              _selectedIcon = icon;
+                            });
+                          }),
+                          _buildIconButton(Icons.school, _selectedIcon, (icon) {
+                            setState(() {
+                              _selectedIcon = icon;
+                            });
+                          }),
+                          _buildIconButton(Icons.sports, _selectedIcon, (icon) {
+                            setState(() {
+                              _selectedIcon = icon;
+                            });
+                          }),
+                          _buildIconButton(Icons.celebration, _selectedIcon,
+                              (icon) {
+                            setState(() {
+                              _selectedIcon = icon;
+                            });
+                          }),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          _deleteEvent(event);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      ElevatedButton(
+                        child: const Text('Save'),
+                        onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      final updatedEvent = Event(
+                        title: _title,
+                        deadline: _date,
+                        color: _selectedColor,
+                        icon: _selectedIcon,
+                        notes: _notes,
+                      );
+                      _updateEvent(event, updatedEvent);
+                      Navigator.of(context).pop();
+
+                          }
+                        },
+                      ),
+                    ])
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+void _updateEvent(Event oldEvent, Event updatedEvent) {
+    setState(() {
+      final oldEventDate = _truncateTime(oldEvent.deadline);
+      final updatedEventDate = _truncateTime(updatedEvent.deadline);
+
+      // Remove the old event
+      _events[oldEventDate]!.remove(oldEvent);
+      if (_events[oldEventDate]!.isEmpty) {
+        _events.remove(oldEventDate);
+      }
+
+      // Add the updated event
+      if (_events.containsKey(updatedEventDate)) {
+        _events[updatedEventDate]!.add(updatedEvent);
+      } else {
+        _events[updatedEventDate] = [updatedEvent];
+      }
+
+      _selectedDay = updatedEventDate;
+      _focusedDay = updatedEventDate;
+    });
+  }
+
+  void _deleteEvent(Event event) {
+    setState(() {
+      final eventDate = _truncateTime(event.deadline);
+      _events[eventDate]!.remove(event);
+      if (_events[eventDate]!.isEmpty) {
+        _events.remove(eventDate);
+      }
+      // If we've deleted all events for the selected day, update the selected day
+      if (!_events.containsKey(_selectedDay)) {
+        _selectedDay = _focusedDay;
+      }
+    });
+  }
 
   Widget _buildEventIndicator(Event event) {
     return Container(
@@ -324,6 +622,7 @@ Widget _buildDayCell(DateTime day, DateTime focusedDay,
     DateTime _date = _selectedDay ?? DateTime.now();
     Color _selectedColor = Colors.blue;
     IconData _selectedIcon = Icons.event;
+    String _notes = '';
 
     showDialog(
       context: context,
@@ -352,27 +651,48 @@ Widget _buildDayCell(DateTime day, DateTime focusedDay,
                         },
                       ),
                       const SizedBox(height: 12),
+                      TextFormField(
+                        decoration: const InputDecoration(labelText: 'Notes'),
+                        onSaved: (value) {
+                          _notes = value ?? '';
+                        },
+                      ),
+                      const SizedBox(height: 12),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Expanded(
-                            child: TextButton(
-                              onPressed: () async {
-                                final DateTime? picked = await showDatePicker(
-                                  context: context,
-                                  initialDate: _date,
-                                  firstDate: DateTime.now(),
-                                  lastDate: DateTime(2101),
-                                );
-                                if (picked != null && picked != _date) {
-                                  setState(() {
-                                    _date = picked;
-                                  });
-                                }
-                              },
-                              child: Text(
-                                DateFormat('yyyy-MM-dd').format(_date),
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w700),
+                            flex: 1,
+                            child: const Icon(Icons.calendar_month_rounded),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFFd0dacc).withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: TextButton(
+                                onPressed: () async {
+                                  final DateTime? picked = await showDatePicker(
+                                    context: context,
+                                    initialDate: _date,
+                                    firstDate: DateTime(2020),
+                                    lastDate: DateTime(2101),
+                                  );
+                                  if (picked != null && picked != _date) {
+                                    setState(() {
+                                      _date = picked;
+                                    });
+                                  }
+                                },
+                                child: Text(
+                                  DateFormat('MMM d, yyyy').format(_date),
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: Color(0xFFe9837e),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -471,15 +791,10 @@ Widget _buildDayCell(DateTime day, DateTime focusedDay,
                         ),
                         color: _selectedColor,
                         icon: _selectedIcon,
+                        notes: _notes,
                       );
-                      setState(() {
-                        final eventDate = _truncateTime(newEvent.deadline);
-                        if (_events.containsKey(eventDate)) {
-                          _events[eventDate]!.add(newEvent);
-                        } else {
-                          _events[eventDate] = [newEvent];
-                        }
-                      });
+                      _addEvent(
+                          newEvent); // Use the new method to add the event
                       Navigator.of(context).pop();
                     }
                   },
@@ -490,6 +805,19 @@ Widget _buildDayCell(DateTime day, DateTime focusedDay,
         );
       },
     );
+  }
+
+  void _addEvent(Event newEvent) {
+    setState(() {
+      final eventDate = _truncateTime(newEvent.deadline);
+      if (_events.containsKey(eventDate)) {
+        _events[eventDate]!.add(newEvent);
+      } else {
+        _events[eventDate] = [newEvent];
+      }
+      _selectedDay = eventDate;
+      _focusedDay = eventDate;
+    });
   }
 
   Widget _buildColorButton(
@@ -582,10 +910,12 @@ class Event {
   final DateTime deadline;
   final Color color;
   final IconData icon;
+  final String notes;
 
   Event(
       {required this.title,
       required this.deadline,
       required this.color,
-      required this.icon});
+      required this.icon,
+      this.notes = 'No notes'});
 }
