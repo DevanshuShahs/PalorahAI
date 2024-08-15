@@ -1,6 +1,7 @@
 import 'package:app/Pages/Navbar/tutorials.dart';
 import 'package:app/Pages/Navbar/calendar.dart';
 import 'package:app/Pages/Navbar/created_plan.dart';
+import 'package:app/Pages/Navbar/email_writer.dart';
 import 'package:flutter/material.dart';
 
 class Homepage extends StatefulWidget {
@@ -13,10 +14,11 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
   PageController _pageController = PageController();
-  List<Widget> _screens = [
+  final List<Widget> _screens = [
     const CreatedPlanHomePage(),
     const CalendarPage(),
     Tutorial(),
+    const DonorDraft(),
   ];
 
   @override
@@ -30,20 +32,25 @@ class _HomepageState extends State<Homepage> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.description, size: _selectedIndex == 0 ? 35 : 25,),
+            icon: Icon(Icons.description, size: _selectedIndex == 0 ? 35 : 25),
             label: 'Plan',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today, size: _selectedIndex == 1 ? 35 : 25,),
+            icon: Icon(Icons.calendar_today, size: _selectedIndex == 1 ? 35 : 25),
             label: 'Calendar',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school, size: _selectedIndex == 2 ? 35 : 25,),
+            icon: Icon(Icons.school, size: _selectedIndex == 2 ? 35 : 25),
             label: 'Tutorial',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.email, size: _selectedIndex == 3 ? 35 : 25),
+            label: 'DonorDraft',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey, // Set color for unselected items
         onTap: (int index) {
           setState(() {
             _selectedIndex = index;
