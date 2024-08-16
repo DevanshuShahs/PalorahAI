@@ -89,6 +89,7 @@ class _PlanState extends State<Plan> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   bool _showButton = true;
+  TextEditingController _planNameController = TextEditingController();
 
   @override
   void initState() {
@@ -109,6 +110,8 @@ class _PlanState extends State<Plan> with SingleTickerProviderStateMixin {
   void dispose() {
     _scrollController.dispose();
     _animationController.dispose();
+    _planNameController.dispose();
+
     super.dispose();
   }
 
@@ -151,7 +154,7 @@ class _PlanState extends State<Plan> with SingleTickerProviderStateMixin {
         setState(() {
           planSteps = parsePlanSteps(value.output!);
         });
-        savePlanToFirestore(planSteps!);
+        // savePlanToFirestore(planSteps!);
       } else {
         setState(() {
           planSteps = [PlanStep(title: 'No output', substeps: [])];
@@ -193,6 +196,7 @@ class _PlanState extends State<Plan> with SingleTickerProviderStateMixin {
       if (user != null) {
         await firestore.collection('plans').add({
           'userId': user.uid,
+          'planName': _planNameController.text,
           'plan': steps
               .map((step) => {
                     'title': step.title,
@@ -262,88 +266,123 @@ class _PlanState extends State<Plan> with SingleTickerProviderStateMixin {
     );
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Plan'),
+        title: const Text('Create Your Plan'),
       ),
       body: Stack(
-  children: [
-    SafeArea(
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (planSteps == null)
-                buildLoadingScreen()
-               
-              else
-                ...planSteps!.map((step) => buildSteps(step)),
-              const SizedBox(height: 25),
-              if (planSteps != null)
-                CustomButton(
-                  disabled: planSteps == null ? true : false,
-                 
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            Homepage(),
-                        transitionsBuilder: (context, animation,
-                            secondaryAnimation, child) {
-                          return FadeTransition(
-                              opacity: animation, child: child);
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (planSteps == null)
+                      buildLoadingScreen()
+                    else
+                      ...planSteps!.map((step) => buildSteps(step)),
+                    const SizedBox(height: 25),
+                    if (planSteps != null)
+                      CustomButton(
+                        disabled: planSteps == null,
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Name Your Plan'),
+                                content: TextField(
+                                  controller: _planNameController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter a name for your plan',
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Save'),
+                                    onPressed: () {
+                                      if (_planNameController.text.isNotEmpty) {
+                                        savePlanToFirestore(planSteps!);
+                                        Navigator.of(context).pop(); // Dismiss the dialog
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Plan "${_planNameController.text}" saved successfully!')),
+                                        );
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            pageBuilder: (context, animation, secondaryAnimation) =>
+                                                Homepage(),
+                                            transitionsBuilder: (context, animation,
+                                                secondaryAnimation, child) {
+                                              return FadeTransition(
+                                                  opacity: animation, child: child);
+                                            },
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Please enter a plan name')),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
+                        child: const Text('Save Plan'),
                       ),
-                    );
-                  },
-                  child: const Text('Finish'),
+                    const SizedBox(height: 30),
+                  ],
                 ),
-              const SizedBox(height: 30), // Add space for the floating button
-            ],
-          ),
-        ),
-      ),
-    ),
-    if (_showButton && planSteps != null)
-      Positioned(
-        bottom: 20,
-        left: 0,
-        right: 0,
-        child: Center(
-          child: GestureDetector(
-            onTap: _scrollToBottom,
-            child: AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return Transform.translate(
-                  offset: Offset(0, 5 * _animation.value),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.keyboard_arrow_down,
-                      color: Colors.white,
-                      size: 30,
-                    ),
-                  ),
-                );
-              },
+              ),
             ),
           ),
-        ),
+          if (_showButton && planSteps != null)
+            Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: _scrollToBottom,
+                  child: AnimatedBuilder(
+                    animation: _animation,
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(0, 5 * _animation.value),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
-  ],
-),
-
     );
   }
 

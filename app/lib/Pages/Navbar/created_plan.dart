@@ -3,6 +3,8 @@ import 'package:app/Pages/userPlan.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Services/authentication.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CreatedPlanHomePage extends StatefulWidget {
   const CreatedPlanHomePage({super.key});
@@ -11,24 +13,31 @@ class CreatedPlanHomePage extends StatefulWidget {
   State<CreatedPlanHomePage> createState() => _CreatedPlanHomePageState();
 }
 
-class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> with AutomaticKeepAliveClientMixin {
-  final List<Map<String, String>> plans = [
-    {'name': 'Savings Plan', 'description': 'Save for your future'},
-    {'name': 'Investment Plan', 'description': 'Grow your wealth'},
-    {'name': 'Debt Reduction', 'description': 'Get out of debt faster'},
-    {'name': 'Retirement Plan', 'description': 'Secure your golden years'},
-  ];
-
+class _CreatedPlanHomePageState extends State<CreatedPlanHomePage>
+    with AutomaticKeepAliveClientMixin {
   late Future<String> _userNameFuture;
+  late Stream<QuerySnapshot> _plansStream;
 
   @override
   void initState() {
     super.initState();
     _userNameFuture = fetchUserName();
+    _plansStream = _getPlansStream();
   }
 
   @override
   bool get wantKeepAlive => true;
+
+  Stream<QuerySnapshot> _getPlansStream() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return FirebaseFirestore.instance
+          .collection('plans')
+          .where('userId', isEqualTo: user.uid)
+          .snapshots();
+    }
+    return Stream.empty();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +54,7 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> with Automati
               const SizedBox(height: 20),
               const Text(
                 "Your plans",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 27,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'PlayfairDisplay',
@@ -89,7 +98,8 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> with Automati
                   ),
                   Text(
                     snapshot.data ?? 'Guest',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     'FINANCIAL BEGINNER',
@@ -108,66 +118,75 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> with Automati
   }
 
   Widget _buildPlanGrid() {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.9, // Adjust this value to change card height
-      ),
-      itemCount: plans.length,
-      itemBuilder: (context, index) {
-        return _buildPlanCard(plans[index]);
-      },
-    );
-  }
+  return StreamBuilder<QuerySnapshot>(
+    stream: _plansStream,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return buildShimmerEffect();
+      }
 
-  Widget _buildPlanCard(Map<String, String> plan) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const UserPlan(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-            ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.account_balance, size: 40, color: Theme.of(context).primaryColor),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      plan['name']!,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      plan['description']!,
-                      style: const TextStyle(fontSize: 15, color: Colors.grey),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+      if (snapshot.hasError) {
+        return Center(child: Text('Error: ${snapshot.error}'));
+      }
+
+      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+        return const Center(child: Text('No plans created yet.'));
+      }
+
+      final plans = snapshot.data!.docs;
+
+      return GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 0.9,
         ),
+        itemCount: plans.length,
+        itemBuilder: (context, index) {
+          final plan = plans[index].data() as Map<String, dynamic>;
+          return _buildPlanButton(plan, plans[index].id);
+        },
+      );
+    },
+  );
+}
+
+
+  Widget _buildPlanButton(Map<String, dynamic> plan, String planId) {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => UserPlan(planId: planId),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: const EdgeInsets.all(15),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.description, size: 40),
+          const SizedBox(height: 10),
+          Text(
+            plan['planName'] ?? 'Unnamed Plan',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
@@ -181,8 +200,10 @@ class _CreatedPlanHomePageState extends State<CreatedPlanHomePage> with Automati
           Navigator.push(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => const LandingPage(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const LandingPage(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
                 return FadeTransition(opacity: animation, child: child);
               },
             ),

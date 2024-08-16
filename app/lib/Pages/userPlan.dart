@@ -18,7 +18,9 @@ class PlanStep {
 }
 
 class UserPlan extends StatefulWidget {
-  const UserPlan({super.key});
+  final String planId;
+
+  const UserPlan({super.key, required this.planId});
 
   @override
   State<UserPlan> createState() => _UserPlanState();
@@ -28,6 +30,7 @@ class _UserPlanState extends State<UserPlan> {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<PlanStep>? planSteps;
+  String planName = '';
 
   @override
   void initState() {
@@ -35,25 +38,26 @@ class _UserPlanState extends State<UserPlan> {
     fetchUserPlan();
   }
 
-  Future<void> fetchUserPlan() async {
+    Future<void> fetchUserPlan() async {
     try {
       User? user = auth.currentUser;
       if (user != null) {
-        QuerySnapshot querySnapshot = await firestore
+        DocumentSnapshot documentSnapshot = await firestore
             .collection('plans')
-            .where('userId', isEqualTo: user.uid)
-            .orderBy('timestamp', descending: true)
-            .limit(1)
+            .doc(widget.planId)
             .get();
 
-        if (querySnapshot.docs.isNotEmpty) {
-          var docData = querySnapshot.docs.first.data() as Map<String, dynamic>;
-          print('Raw Firestore data: $docData'); // Log raw data
+        if (documentSnapshot.exists) {
+          var docData = documentSnapshot.data() as Map<String, dynamic>;
+          print('Raw Firestore data: $docData');
+
+          setState(() {
+            planName = docData['planName'] ?? 'Unnamed Plan';
+          });
 
           if (docData.containsKey('plan')) {
             var planData = docData['plan'];
-            print(
-                'Plan data type: ${planData.runtimeType}'); // Log plan data type
+            print('Plan data type: ${planData.runtimeType}');
 
             if (planData is List) {
               setState(() {
@@ -72,7 +76,6 @@ class _UserPlanState extends State<UserPlan> {
                 }).toList();
               });
             } else if (planData is String) {
-              // Handle case where plan is a single string
               setState(() {
                 planSteps = [PlanStep(title: planData, substeps: [])];
               });
@@ -91,7 +94,7 @@ class _UserPlanState extends State<UserPlan> {
             });
           }
         } else {
-          print('No documents found');
+          print('No document found with ID: ${widget.planId}');
           setState(() {
             planSteps = [];
           });
@@ -104,6 +107,7 @@ class _UserPlanState extends State<UserPlan> {
       });
     }
   }
+
 
   Widget buildLoadingScreen() {
     return Shimmer.fromColors(
@@ -185,13 +189,14 @@ class _UserPlanState extends State<UserPlan> {
           ],
         ),
         ...step.substeps.map((substep) {
-  String displayText = substep.trim();
-  bool isBold = displayText.startsWith('* **') && displayText.endsWith('**');
+          String displayText = substep.trim();
+          bool isBold =
+              displayText.startsWith('* **') && displayText.endsWith('**');
 
-  // Remove all asterisks from the text
-  displayText = displayText.replaceAll('*', '').trim();
+          // Remove all asterisks from the text
+          displayText = displayText.replaceAll('*', '').trim();
 
-  return Padding(
+          return Padding(
             padding: const EdgeInsets.only(left: 32.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +245,7 @@ class _UserPlanState extends State<UserPlan> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Plan'),
+        title: Text(planName),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -268,5 +273,4 @@ class _UserPlanState extends State<UserPlan> {
         ),
       ),
     );
-  }
-}
+  }}
