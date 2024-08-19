@@ -1,3 +1,4 @@
+import 'package:app/Pages/Navbar/personal_Helper.dart';
 import 'package:app/Pages/Navbar/tutorials.dart';
 import 'package:app/Pages/Navbar/calendar.dart';
 import 'package:app/Pages/Navbar/created_plan.dart';
@@ -19,6 +20,7 @@ class _HomepageState extends State<Homepage> {
     const CalendarPage(),
     Tutorial(),
     const DonorDraft(),
+    const Myhelper(),
   ];
 
   @override
@@ -46,6 +48,10 @@ class _HomepageState extends State<Homepage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.email, size: _selectedIndex == 3 ? 35 : 25),
             label: 'DonorDraft',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.help_center, size: _selectedIndex == 4 ? 35 : 25),
+            label: 'Helper',
           ),
         ],
         currentIndex: _selectedIndex,

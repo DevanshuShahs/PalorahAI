@@ -10,13 +10,33 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
+  // Initialize Gemini (assuming it's correct and required for your app)
   Gemini.init(apiKey: 'AIzaSyDfBHY0jBXU89_HgdQi0ZtuPCMvXIBqnhY');
+
+  // Ensure all bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await FirebaseApi().initNotifications();
+
+  try {
+    // Initialize Firebase
+    await Firebase.initializeApp();
+    print('Firebase initialized successfully');
+  } catch (e) {
+    // Catch and print any errors that occur during Firebase initialization
+    print('Error initializing Firebase: $e');
+  }
+
+  // Initialize Firebase Notifications
+  try {
+    await FirebaseApi().initNotifications();
+    print('Firebase notifications initialized successfully');
+  } catch (e) {
+    // Catch and print any errors during notification initialization
+    print('Error initializing Firebase notifications: $e');
+  }
+
+  // Start the Flutter app
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
