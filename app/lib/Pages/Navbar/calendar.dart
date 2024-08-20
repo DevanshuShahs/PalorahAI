@@ -5,6 +5,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:collection/collection.dart';
+import 'package:collection/collection.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -33,11 +35,130 @@ class _CalendarPageState extends State<CalendarPage>
     _userNameFuture = fetchUserName();
     _selectedDay = _focusedDay;
     _events = {};
-    _fetchEvents(); // Fetch events from Firestore
+    _fetchEvents();
+    _listenToPlanUpdates();
+// Fetch events from Firestore
+  }
+
+  void _listenToPlanUpdates() {
+    FirebaseFirestore.instance
+        .collection('plans')
+        .where('userId', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+        .snapshots()
+        .listen((snapshot) {
+      for (var change in snapshot.docChanges) {
+        if (change.type == DocumentChangeType.added ||
+            change.type == DocumentChangeType.modified) {
+          parsePlanAndCreateEvents(change.doc.data()!, change.doc.id);
+        }
+      }
+    });
   }
 
   DateTime _truncateTime(DateTime dateTime) {
     return DateTime(dateTime.year, dateTime.month, dateTime.day);
+  }
+
+  Future<void> parsePlanAndCreateEvents(
+      Map<String, dynamic> plan, String planId) async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final String planName = plan['planName'] ?? 'Unnamed Plan';
+    final Timestamp planTimestamp = plan['timestamp'] ?? Timestamp.now();
+    final List<dynamic> steps = plan['plan'] ?? [];
+
+    List<Event> eventsToAdd = [];
+
+    for (int i = 0; i < steps.length; i++) {
+      final Map<String, dynamic> step =
+          steps[i] is Map<String, dynamic> ? steps[i] : {};
+      final String title = step['title'] ?? 'Untitled Step';
+      final List<dynamic> substeps = step['substeps'] ?? [];
+
+      String? timelineString = substeps
+          .firstWhere(
+            (substep) => substep.toString().toLowerCase().contains('timeline:'),
+            orElse: () => null,
+          )
+          ?.toString();
+
+      if (timelineString != null) {
+        int? days = parseTimelineString(timelineString);
+        if (days != null) {
+          DateTime eventDate = planTimestamp.toDate().add(Duration(days: days));
+
+          Event newEvent = Event(
+            userId: user.uid,
+            planId: planId,
+            stepIndex: i,
+            title: '$planName - ${title.replaceAll('*', '')}',
+            deadline: eventDate,
+            color: Colors.blue,
+            icon: Icons.event,
+            notes: 'Timeline: $timelineString',
+          );
+
+          eventsToAdd.add(newEvent);
+        }
+      }
+    }
+
+    // Use a batch write to add or update events
+    WriteBatch batch = _firestore.batch();
+    for (Event event in eventsToAdd) {
+      DocumentReference eventRef = _firestore
+          .collection('events')
+          .doc('${event.planId}_${event.stepIndex}');
+      batch.set(eventRef, event.toMap(), SetOptions(merge: true));
+    }
+
+    await batch.commit();
+    _fetchEvents(); // Refresh events after adding new ones
+  }
+
+  Future<void> _fetchEvents() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final querySnapshot = await _firestore
+          .collection('events')
+          .where('userId', isEqualTo: user.uid)
+          .get();
+
+      final events = querySnapshot.docs
+          .map((doc) => Event.fromMap(doc.data(), doc.id))
+          .toList();
+
+      setState(() {
+        _events = groupEventsByDate(events);
+      });
+    }
+  }
+
+  Map<DateTime, List<Event>> groupEventsByDate(List<Event> events) {
+    return groupBy(
+        events,
+        (Event e) =>
+            DateTime(e.deadline.year, e.deadline.month, e.deadline.day));
+  }
+
+  int? parseTimelineString(String timeline) {
+    final RegExp monthRegExp = RegExp(r'(\d+)\s*(month|months|mon)');
+    final RegExp weekRegExp = RegExp(r'(\d+)\s*(week|weeks|wk|wks)');
+
+    final monthMatch = monthRegExp.firstMatch(timeline);
+    if (monthMatch != null) {
+      int months = int.parse(monthMatch.group(1)!);
+      return months * 30; // Approximate days in a month
+    }
+
+    final weekMatch = weekRegExp.firstMatch(timeline);
+    if (weekMatch != null) {
+      int weeks = int.parse(weekMatch.group(1)!);
+      return weeks * 7; // Days in a week
+    }
+
+    return null; // If neither month nor week is found
   }
 
   @override
@@ -584,55 +705,35 @@ class _CalendarPageState extends State<CalendarPage>
     _deleteEventFromFirestore(event);
   }
 
-  Future<void> _fetchEvents() async {
-    final User? user = _auth.currentUser;
-    if (user != null) {
-      final querySnapshot = await _firestore
-          .collection('events')
-          .where('userId', isEqualTo: user.uid)
-          .get();
-      final events = querySnapshot.docs
-          .map((doc) => Event.fromMap(doc.data(), doc.id))
-          .toList();
-      setState(() {
-        _events = groupEventsByDate(events);
-      });
-    } else {
-      // Handle the case where no user is signed in
-      setState(() {
-        _events = {};
-      });
-    }
-  }
 
-  Map<DateTime, List<Event>> groupEventsByDate(List<Event> events) {
-    return events.fold<Map<DateTime, List<Event>>>({}, (map, event) {
-      final date = DateTime(
-          event.deadline.year, event.deadline.month, event.deadline.day);
-      if (!map.containsKey(date)) {
-        map[date] = [];
-      }
-      map[date]!.add(event);
-      return map;
-    });
-  }
 
   // Add an event to Firestore
   Future<void> _addEventToFirestore(Event event) async {
     final User? user = _auth.currentUser;
     if (user != null) {
-      final eventMap = event.toMap();
-      eventMap['userId'] = user.uid;
-      final docRef = await _firestore.collection('events').add(eventMap);
-      event.id = docRef.id;
-      _addEvent(event);
+      // Check if an event with the same title and date already exists
+      final querySnapshot = await _firestore
+          .collection('events')
+          .where('userId', isEqualTo: user.uid)
+          .where('title', isEqualTo: event.title)
+          .where('deadline', isEqualTo: event.deadline.toIso8601String())
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        final eventMap = event.toMap();
+        eventMap['userId'] = user.uid;
+        final docRef = await _firestore.collection('events').add(eventMap);
+        event.id = docRef.id;
+        print("Added event to Firestore: ${event.title}");
+        _addEvent(event);
+      } else {
+        print("Event already exists: ${event.title}");
+      }
     } else {
-      // Handle the case where no user is signed in
-      print('No user signed in');
+      print('No user signed in when adding event to Firestore');
     }
   }
 
-  // Update an event in Firestore
   Future<void> _updateEventInFirestore(
       Event oldEvent, Event updatedEvent) async {
     final User? user = _auth.currentUser;
@@ -885,6 +986,7 @@ class _CalendarPageState extends State<CalendarPage>
       _selectedDay = eventDate;
       _focusedDay = eventDate;
     });
+    print("Added event to local state: ${newEvent.title}");
   }
 
   Widget _buildColorButton(
@@ -973,8 +1075,10 @@ Widget buildShimmerEffect() {
 }
 
 class Event {
-  String? id; // Firestore document ID
+   String? id;
   final String userId;
+   String? planId;
+   int? stepIndex;
   final String title;
   final DateTime deadline;
   final Color color;
@@ -982,8 +1086,10 @@ class Event {
   final String notes;
 
   Event({
-    this.id,
+     this.id,
     required this.userId,
+     this.planId,
+     this.stepIndex,
     required this.title,
     required this.deadline,
     required this.color,
@@ -991,9 +1097,12 @@ class Event {
     this.notes = 'No notes',
   });
 
-  Map<String, dynamic> toMap() {
+
+ Map<String, dynamic> toMap() {
     return {
       'userId': userId,
+      'planId': planId,
+      'stepIndex': stepIndex,
       'title': title,
       'deadline': deadline.toIso8601String(),
       'color': color.value,
@@ -1006,6 +1115,8 @@ class Event {
     return Event(
       id: id,
       userId: map['userId'],
+      planId: map['planId'],
+      stepIndex: map['stepIndex'],
       title: map['title'],
       deadline: DateTime.parse(map['deadline']),
       color: Color(map['color']),
