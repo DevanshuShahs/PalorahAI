@@ -123,6 +123,8 @@ class UserPlanProvider with ChangeNotifier {
   }
 }
 
+
+
 Future<String> fetchUserName() async {
   try {
     // Get the current user
