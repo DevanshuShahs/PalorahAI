@@ -216,17 +216,26 @@ class _CalendarPageState extends State<CalendarPage>
               }),
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  DateFormat('d').format(DateTime.now()),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+              InkWell(
+                onTap: () {
+                  // Define what happens when the text is tapped
+                  setState(() {
+                    _selectedDay = DateTime.now();
+                    _focusedDay = DateTime.now();
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    DateFormat('d').format(DateTime.now()),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
                   ),
                 ),
               ),
@@ -705,8 +714,6 @@ class _CalendarPageState extends State<CalendarPage>
     _deleteEventFromFirestore(event);
   }
 
-
-
   // Add an event to Firestore
   Future<void> _addEventToFirestore(Event event) async {
     final User? user = _auth.currentUser;
@@ -1075,10 +1082,10 @@ Widget buildShimmerEffect() {
 }
 
 class Event {
-   String? id;
+  String? id;
   final String userId;
-   String? planId;
-   int? stepIndex;
+  String? planId;
+  int? stepIndex;
   final String title;
   final DateTime deadline;
   final Color color;
@@ -1086,10 +1093,10 @@ class Event {
   final String notes;
 
   Event({
-     this.id,
+    this.id,
     required this.userId,
-     this.planId,
-     this.stepIndex,
+    this.planId,
+    this.stepIndex,
     required this.title,
     required this.deadline,
     required this.color,
@@ -1097,8 +1104,7 @@ class Event {
     this.notes = 'No notes',
   });
 
-
- Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'userId': userId,
       'planId': planId,
