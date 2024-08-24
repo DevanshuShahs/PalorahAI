@@ -5,6 +5,7 @@ import 'package:app/Pages/sign_up.dart';
 import 'package:app/Services/authentication.dart';
 import 'package:app/Components/button.dart';
 import 'package:app/Components/text_field.dart';
+import 'package:app/Pages/forgot_Password_Page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -124,7 +125,24 @@ class _LoginPageState extends State<LoginPage> {
                                 fillColor: primaryGreen.withOpacity(0.1),
                                 iconColor: primaryGreen,
                               ),
-                              const SizedBox(height: 24),
+                              Padding(
+                                
+                                padding: const EdgeInsets.symmetric(horizontal:25.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                                    return forgotPasswordPage();
+                                  }));
+                                },
+                                      child: Text("Forgot Password?")
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              
                               MyButtons(
                                 onTap: loginUser,
                                 text: isLoading ? "Logging in..." : "Log In",

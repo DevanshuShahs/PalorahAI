@@ -12,6 +12,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   // Initialize Gemini (assuming it's correct and required for your app)
   Gemini.init(apiKey: 'AIzaSyDfBHY0jBXU89_HgdQi0ZtuPCMvXIBqnhY');
+  
 
   // Ensure all bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,12 @@ void main() async {
   }
 
   // Start the Flutter app
+   FirebaseApp app = Firebase.app();
+  FirebaseOptions options = app.options;
+
+  print('Current Firebase project ID: ${options.projectId}');
+  print('Current Firebase API Key: ${options.apiKey}');
+  print('Current Firebase App ID: ${options.appId}');
   runApp(const MyApp());
 }
 class MyApp extends StatelessWidget {
