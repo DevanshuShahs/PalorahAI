@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:collection/collection.dart';
-import 'package:collection/collection.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -1117,7 +1116,7 @@ class Event {
     };
   }
 
-  factory Event.fromMap(Map<String, dynamic> map, String id) {
+   factory Event.fromMap(Map<String, dynamic> map, String id) {
     return Event(
       id: id,
       userId: map['userId'],
