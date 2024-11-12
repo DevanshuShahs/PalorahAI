@@ -12,7 +12,6 @@ import 'package:app/Pages/Quizzes/WebsiteImprovement.dart';
 import 'package:app/player.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

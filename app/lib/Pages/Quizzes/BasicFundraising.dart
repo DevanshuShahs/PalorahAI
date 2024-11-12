@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:app/Pages/Navbar/tutorials.dart';
 
 class FundraisingQuizApp extends StatelessWidget {
   final Function(int, int) onQuizCompleted;
